@@ -1,0 +1,92 @@
+*{font-family:Consolas,monospace;}
+html{margin:0;padding:0}
+body{background-color:white;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+audio{position:absolute;opacity:0.4;top:5px;right:5px;height:30px;}
+canvas{position: fixed;top:0;left:0;}
+
+/* ========= Curtain Menu ========= */
+.overlay{height:100%;width:100%;position:fixed;z-index:10;left:0;top:0;background:url('../img/bg.png');overflow-x:hidden;-webkit-transition:0.5s;-o-transition:0.5s;transition:0.5s;}
+.menu{position:relative;top:25%;width:320px;height:320px;margin:auto;background-color:rgba(20,20,20,.6);padding:10px;border-radius:8px;overflow-y:auto}
+.menu input[type="text"]{display:inline-block;width:275px;font-size:1.3em;padding:5px 10px;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;border:none;outline:none;border-radius:5px;margin-bottom:10px;}
+.menu input[type="color"]{opacity:0;width:100%;height:100%;border:none;padding:0;}
+.menu input[type="color"]:hover{cursor:pointer;}
+#color-picker-wrapper:hover{border:solid 2px #DDD;}
+#color-picker-wrapper{display:inline-block;margin:auto 0;border:solid 2px #999;border-radius:50%;width:25px;height:25px;}
+.menu select{display:block;color:#eee;width:100%;text-indent:10px;padding:5px 10px;font-size:1.2em;font-weight:bold;border:2px solid #07BC16;border-radius:5px;background-color:transparent;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;margin-bottom:10px;}
+.menu option{background-color:#222;}
+.btn-play{border:none;display:block;width:100%;margin:5px 0;padding:10px 0;font-weight:bold;color:white;font-size:1.1em;border-radius:5px;cursor:pointer;}
+.gr-btn{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-wrap:wrap;flex-wrap:wrap;}
+.item{width:48%;}
+.guide{display:none;margin:25px 2px 2px 2px;background-color:#313135;border-radius:5px;}
+.guide p{margin:5px 0 2px 5px;width:100%;color:#999;font-size:1.1em;text-align:left;}
+.guide b{color:#ddd;}
+.blue{background-color:#2A6787;}
+.green{background-color:#608d27;}
+.gray{background-color:rgba(60,60,60,.8);}
+.blue:hover{background-color:#4C89A9;}
+.green:hover{background-color:#80af49;}
+.gray:hover{background-color:rgba(70,70,70,1);}
+
+/* ======================== Reset button ===================*/
+#menuWhenDie{display:none;z-index:3;position:fixed;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);transform:translate(-50%,-50%);}
+#menuWhenDie input{padding:10px;border:none;font-size:22px;border-radius:3px;background-color:rgba(70,70,70,.6);color:white;opacity:0.5;cursor:pointer;-webkit-transition:0.1s;-o-transition:0.1s;transition:0.1s;}
+#menuWhenDie input:nth-child(1){width:150px;}
+#menuWhenDie input:nth-child(2){width:70px;}
+#menuWhenDie input:nth-child(3){width:80px;}
+#menuWhenDie input:hover{opacity:0.9;background-color:rgba(70,70,70,1);}
+#watch {display: none}
+
+/* =========   Alert ===============*/
+#alert{z-index:2;display:block;position:fixed;top:40px;right:5px;padding:20px;background-color:#111;opacity:0;color:white;font-weight:bold;-webkit-transition:0.3s;-o-transition:0.3s;transition:0.3s;}
+#closebtn{margin-left:15px;color:white;font-weight:bold;float:right;font-size:22px;line-height:20px;cursor:pointer;-webkit-transition:0.3s;-o-transition:0.3s;transition:0.3s;}
+
+/* ========= Chat Box ========== */
+#chatBox{display:none;position:fixed;left:0px;bottom:5px;width:300px;height:300px;padding:5px;opacity:0.6;z-index:2;-webkit-transition-duration:0.3s;-o-transition-duration:0.3s;transition-duration:0.3s;}
+#conversation{background-color:rgba(51,51,51,0.2);color:white;width:100%;height:260px;overflow:auto;-webkit-transition-duration:0.3s;-o-transition-duration:0.3s;transition-duration:0.3s;word-wrap:break-word;white-space:-moz-pre-wrap;white-space:pre-wrap;}
+#conversation p{padding:8px 0 8px 0;margin:0;}
+#typing{width:100%;padding:5px 0 0 0;}
+#typing input[type="text"]{font-size:16px;background-color:rgba(0,0,0,0.4);color:white;border:none;height:30px;width:235px;z-index:2;}
+#showHideChat{background-color:rgba(51,51,51,0.8);color:white;border:none;width:50px;}
+#showHideChat:hover{background-color:white;color:black;cursor:pointer;}
+
+/*============= Custom_weapons =============*/
+.custom_weapons {
+	display:none;
+	border: 1px solid #fff;
+	background-color: #aaa8;
+	z-index:3;
+	position:fixed;
+	left:50%;
+	top:50%;
+	-webkit-transform:translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+	transform:translate(-50%, -50%);
+}
+
+.custom_weapons th {
+	color: white;
+	background-color: #222;
+	padding: 10px;
+}
+
+.custom_weapons p {
+	margin: 5px;
+}
+
+.custom_weapons tr:last-child {
+	text-align: center;
+}
+
+.custom_weapons button {
+	border: none;
+	padding: 10px;
+	cursor: pointer;
+}
+.custom_weapons button:hover {
+}
+
+/* ========= ScrollBar ============ */
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:#444;}
+::-webkit-scrollbar-thumb{background:#999;border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:#fff;}
