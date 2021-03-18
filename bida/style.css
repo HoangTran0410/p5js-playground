@@ -1,0 +1,16 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100vh;
+  /* background-color: rgb(200, 200, 200); */
+}
+
+canvas {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
