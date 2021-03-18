@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Of Life</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="centered" id="game-container"></div>
+
+    <div class="position-top-left">
+        <div id="tools-menu">
+            <div class="btn-group">
+                <button onclick="randomGrid()" title="Random">
+                    <i class="fas fa-random"></i>
+                </button>
+                <button onclick="clearGrid()" title="Clear">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button onclick="togglePlay()" title="Play/Pause" id="btnPlayPause">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <button onclick="step()" title="Step">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+
+            <label class="checkbox-container">Loop world
+                <input type="checkbox" checked="checked" onchange="setLoop(this.checked)">
+                <span class="checkmark"></span>
+            </label>
+
+            <div>
+                <label for="pattern">Patterns:
+                    <button onclick="restartPattern()" title="Restart">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <br />
+                    <select name="pattern" id="pattern" onchange="setPattern(this.value)"></select>
+                </label>
+            </div>
+        </div>
+
+        <button class="" onclick="toggleToolMenu()">
+            <i class="fas fa-tools"></i>
+        </button>
+    </div>
+
+    <script src="js/patterns.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
