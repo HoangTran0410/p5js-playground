@@ -2,7 +2,7 @@
 
 Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các bạn chạy thử nhé :)
 
-## Top Project
+## Top Projects
 
 ### 2018
 1. [Gungame 1](./2018/gungame1/)
