@@ -8,17 +8,26 @@ class Car {
 
         this.color = [random(255), random(255), random(255)];
         this.braking = false;
+
+        this.preTrack = createVector(x, y);
+        this.tracks = [];
     }
 
     update() {
         this.pos.add(this.vel);
-        this.vel.limit(this.maxSpeed);
-        this.vel.mult(0.99);
+        // this.vel.y = constrain(this.vel.y, -this.maxSpeed, 0);
+        // this.vel.x = constrain(this.vel.x, -this.maxSpeed, this.maxSpeed);
+        this.vel.mult(0.98);
 
         this.bound();
+        this.track();
     }
 
     show() {
+        if (currentDayTime < 6 || currentDayTime > 18) {
+            this.showLight();
+        }
+
         if (this.img) {
             push();
             translate(this.pos.x, this.pos.y);
@@ -26,15 +35,71 @@ class Car {
             image(this.img, 0, 0, this.size.y * 1.25, this.size.x * 1.8);
             pop();
 
-            stroke(80);
-            strokeWeight(1);
-            noFill();
-            rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+            // stroke(80);
+            // strokeWeight(1);
+            // noFill();
+            // rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
         } else {
             fill(this.color);
             strokeWeight(3);
             stroke(0);
             rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+        }
+    }
+
+    showLight() {
+        let { x, y } = this.size;
+
+        push();
+        translate(this.pos.x, this.pos.y);
+        fill(255, random(40, 80));
+        noStroke();
+        triangle(
+            -x / 2 + 5,
+            -y / 2 + 5,
+            -x / 2 - 20,
+            -y / 2 - 40,
+            -x / 2 + 20,
+            -y / 2 - 40
+        );
+        triangle(
+            x / 2 - 5,
+            -y / 2 + 5,
+            x / 2 - 20,
+            -y / 2 - 40,
+            x / 2 + 20,
+            -y / 2 - 40
+        );
+        pop();
+    }
+
+    showTracks() {
+        fill(70);
+        noStroke();
+        // stroke(70);
+        // strokeWeight(5);
+        // noFill();
+        beginShape();
+        for (let t of this.tracks) {
+            vertex(t.x - this.size.x / 2, t.y);
+        }
+        endShape();
+
+        beginShape();
+        for (let t of this.tracks) {
+            vertex(t.x + this.size.x / 2, t.y);
+        }
+        endShape();
+    }
+
+    track() {
+        if (p5.Vector.dist(this.preTrack, this.pos) > 30) {
+            this.tracks.push(this.pos.copy().add(0, this.size.y / 2));
+            this.preTrack.set(this.pos.x, this.pos.y + this.size.y / 2);
+
+            if (this.tracks.length > 10) {
+                this.tracks.shift();
+            }
         }
     }
 
@@ -48,12 +113,18 @@ class Car {
     }
 
     bound() {
-        if (this.pos.x < 0) this.pos.x = 0;
-        if (this.pos.x > width) this.pos.x = width;
+        if (this.pos.x < this.size.x / 2) {
+            this.vel.x *= -0.3;
+            this.pos.x = this.size.x / 2;
+        }
+        if (this.pos.x > width - this.size.x / 2) {
+            this.vel.x *= -0.3;
+            this.pos.x = width - this.size.x / 2;
+        }
     }
 
     brake() {
-        this.vel.mult(0.8);
+        this.vel.mult(0.9);
     }
 
     speedUp() {
@@ -61,15 +132,12 @@ class Car {
     }
 
     moveUp() {
-        this.vel.y -= 0.1;
-    }
-    moveDown() {
-        this.vel.y += 0.1;
+        if (this.vel.y > -this.maxSpeed) this.vel.y -= 0.1;
     }
     moveLeft() {
-        this.vel.x -= 0.5;
+        if (this.vel.x > -this.maxSpeed) this.vel.x -= 0.5;
     }
     moveRight() {
-        this.vel.x += 0.5;
+        if (this.vel.x < this.maxSpeed) this.vel.x += 0.5;
     }
 }
