@@ -26,3 +26,4 @@ Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các b
 ### 2021
 1. [Game of Life](./2021/game-of-life/)
 2. [Spring Forces](./2021/spring-forces/) (simulation)
+3. [Monaco GP](./2021/monaco-gp/) (Racing game)
