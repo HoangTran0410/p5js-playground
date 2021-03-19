@@ -1,3 +1,6 @@
+// Này code ở đâu ý quên rồi :)
+// Không phải code của tôi :)
+
 var sketch = function (p) {
     // Initial setup
     p.setup = function () {
