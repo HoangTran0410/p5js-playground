@@ -3,6 +3,7 @@ let cars = [];
 let smokes = [];
 let player;
 let camera;
+let daynight_icon;
 
 let died;
 let ready;
@@ -21,6 +22,8 @@ function preload() {
     for (let p of paths) {
         assets.push(loadImage('./assets/' + p));
     }
+
+    daynight_icon = loadImage('./assets/day-and-night.png');
 }
 
 function setup() {
@@ -147,6 +150,7 @@ function draw() {
     } else {
         drawSpeed();
         drawScore();
+        drawTime();
         if (died) drawDead();
     }
 }
@@ -238,6 +242,34 @@ function addZero(num) {
     return num < 10 ? '0' + num : num;
 }
 
+function drawTime() {
+    image(daynight_icon, width - 40, 40);
+
+    let angle = map(currentDayTime / 24, 0, 1, -180, 180);
+
+    noFill();
+    stroke('#000');
+    strokeWeight(5);
+    push();
+    translate(width - 40, 40);
+    rotate(radians(angle));
+    line(0, 0, 25, 0);
+    circle(0, 0, 70);
+    pop();
+}
+
+function getDayNight() {
+    let c = currentDayTime;
+    if (c > 3 && c < 6) return 'dawn';
+    else if (c > 6 && c < 10) return 'morning';
+    else if (c > 10 && c < 13) return 'noon';
+    else if (c > 13 && c < 17) return 'afternoon';
+    else if (c > 17 && c < 19) return 'sunset';
+    else if (c > 19 && c < 22) return 'night';
+    else if ((c > 22 && c < 24) || (c > 0 && c < 3)) return 'midnight';
+    else return '...';
+}
+
 function drawScore() {
     textSize(25);
     textAlign(LEFT, BOTTOM);
@@ -245,19 +277,21 @@ function drawScore() {
     noStroke();
 
     let mm = addZero(~~map(currentDayTime - ~~currentDayTime, 0, 1, 0, 59));
-    let daynight = currentDayTime < 6 || currentDayTime > 18 ? 'night' : 'day';
-    let timeText = `${addZero(~~currentDayTime)}:${mm} ${daynight}`;
+    let timeText = `${addZero(~~currentDayTime)}:${mm} ${getDayNight()}`;
     let scoreText = `${~~score} m`;
 
     text(scoreText + '\n' + timeText, 10, height - 10);
 }
 
 function drawDead() {
-    textSize(45);
+    stroke(150);
+    fill('#3339');
+    rect(width / 2, height / 2, width * 2, height / 3);
+
+    textSize(40);
     textAlign(CENTER, CENTER);
-    fill('red');
-    stroke('black');
-    strokeWeight(3);
+    fill('#f22');
+    noStroke();
     text(`YOU DIED\nScore: ${~~score} m`, width / 2, height / 2);
 }
 
