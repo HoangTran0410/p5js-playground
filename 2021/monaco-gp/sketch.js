@@ -10,6 +10,9 @@ let died;
 let ready;
 let score;
 let currentDayTime;
+let mobileMode;
+
+let pMousePressed;
 
 function preload() {
     let paths = [
@@ -28,7 +31,11 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(450, 600);
+    mobileMode = isMobile();
+
+    if (mobileMode) createCanvas(windowWidth, windowHeight);
+    else createCanvas(450, 600);
+
     rectMode(CENTER);
     imageMode(CENTER);
     textFont('Consolas');
@@ -67,6 +74,7 @@ function reset() {
     camera = createVector(0, 0);
     score = 0;
     died = false;
+    ready = false;
 
     frameRate(60);
 }
@@ -149,34 +157,34 @@ function draw() {
     // show
     push();
     translate(-camera.x + width / 2, -camera.y + height - height / 2);
-
     drawRoad();
     drawTrees();
-
     for (let s of smokes) {
         s.show();
     }
-
     for (let car of cars) {
         car.showTracks();
     }
     player.showTracks();
-
     for (let car of cars) {
         car.show();
     }
     player.show();
     pop();
 
+    mobileMode && mobileControl();
+
     // show hint
+    drawSpeed();
+    drawScore();
+    drawTime();
+    if (died) drawDead();
+
     if (!ready) {
         showHint();
-    } else {
-        drawSpeed();
-        drawScore();
-        drawTime();
-        if (died) drawDead();
     }
+
+    pMousePressed = mouseIsPressed;
 }
 
 function control() {
@@ -191,6 +199,7 @@ function control() {
     }
 }
 
+// ------------- p5js events -------------
 function keyPressed() {
     ready = true;
     if (keyCode == UP_ARROW) {
@@ -198,8 +207,15 @@ function keyPressed() {
     }
 }
 
-function keyReleased() {}
+function mousePressed() {
+    ready = true;
+}
 
+function doubleClick() {
+    player.speedUp();
+}
+
+// ------------- Utils -------------
 function getBgColor() {
     let colors = [
         color(3, 7, 36),
@@ -234,36 +250,59 @@ function getBgColor() {
     return lerpColor(colors[fromIndex], colors[toIndex], diff);
 }
 
-function showHint() {
-    background('#2229');
-
-    fill(30, 100);
-    stroke(255);
-    strokeWeight(3);
-    rect(width / 2, height / 2 - 60, 50, 50);
-    rect(width / 2, height / 2, 50, 50);
-    rect(width / 2 - 60, height / 2, 50, 50);
-    rect(width / 2 + 60, height / 2, 50, 50);
-
-    textSize(20);
-    fill(255);
-    noStroke();
-    textAlign(LEFT, CENTER);
-    text('^  - SPEED UP', width / 2, height / 2 - 60);
-    textAlign(CENTER, TOP);
-    text('v\n\n|\nBRAKE', width / 2, height / 2);
-    textAlign(RIGHT, CENTER);
-    text('TURN LEFT -  <', width / 2 - 60, height / 2);
-    textAlign(LEFT, CENTER);
-    text('>  - TURN RIGHT', width / 2 + 60, height / 2);
-
-    fill('red');
-    textAlign(CENTER, BOTTOM);
-    text('Press anykey to continue', width / 2, height - 10);
-}
-
 function addZero(num) {
     return num < 10 ? '0' + num : num;
+}
+
+function getDayNight() {
+    let c = currentDayTime;
+    if (c > 3 && c < 6) return 'dawn';
+    else if (c > 6 && c < 10) return 'morning';
+    else if (c > 10 && c < 13) return 'noon';
+    else if (c > 13 && c < 17) return 'afternoon';
+    else if (c > 17 && c < 19) return 'sunset';
+    else if (c > 19 && c < 22) return 'night';
+    else if ((c > 22 && c < 24) || (c > 0 && c < 3)) return 'midnight';
+    else return '...';
+}
+
+// ------------- Draw methods -------------
+function showHint() {
+    if (mobileMode) {
+        background('#2229');
+
+        fill(255);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        textSize(60);
+        text('PLAY', width / 2, height / 2);
+    } else {
+        background('#2229');
+
+        fill(30, 100);
+        stroke(255);
+        strokeWeight(3);
+        rect(width / 2, height / 2 - 60, 50, 50);
+        rect(width / 2, height / 2, 50, 50);
+        rect(width / 2 - 60, height / 2, 50, 50);
+        rect(width / 2 + 60, height / 2, 50, 50);
+
+        textSize(20);
+        fill(255);
+        noStroke();
+        textAlign(LEFT, CENTER);
+        text('^  - SPEED UP', width / 2, height / 2 - 60);
+        textAlign(CENTER, TOP);
+        text('v\n\n|\nBRAKE', width / 2, height / 2);
+        textAlign(RIGHT, CENTER);
+        text('TURN LEFT -  <', width / 2 - 60, height / 2);
+        textAlign(LEFT, CENTER);
+        text('>  - TURN RIGHT', width / 2 + 60, height / 2);
+
+        fill('red');
+        textAlign(CENTER, BOTTOM);
+        text('Press anykey to continue', width / 2, height - 10);
+    }
 }
 
 function drawTime() {
@@ -280,18 +319,6 @@ function drawTime() {
     line(0, 0, 25, 0);
     circle(0, 0, 70);
     pop();
-}
-
-function getDayNight() {
-    let c = currentDayTime;
-    if (c > 3 && c < 6) return 'dawn';
-    else if (c > 6 && c < 10) return 'morning';
-    else if (c > 10 && c < 13) return 'noon';
-    else if (c > 13 && c < 17) return 'afternoon';
-    else if (c > 17 && c < 19) return 'sunset';
-    else if (c > 19 && c < 22) return 'night';
-    else if ((c > 22 && c < 24) || (c > 0 && c < 3)) return 'midnight';
-    else return '...';
 }
 
 function drawScore() {
@@ -380,4 +407,56 @@ function drawSpeed() {
     stroke(255);
     line(0, 0, v.x, v.y);
     pop();
+}
+
+// ------------- Mobile ----------------
+function button(t, x, y, w, h, once = false) {
+    let isPress =
+        mouseIsPressed &&
+        mouseX > x - w / 2 &&
+        mouseX < x + w / 2 &&
+        mouseY > y - h / 2 &&
+        mouseY < y + h / 2;
+
+    fill(isPress ? '#5559' : '#9999');
+    stroke('#999f');
+    strokeWeight(2);
+    rect(x, y, w, h);
+
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    noStroke();
+    text(t, x, y);
+
+    return {
+        isPress: isPress,
+        isClick: once ? !pMousePressed && isPress : isPress,
+    };
+}
+
+function mobileControl() {
+    let pressBtn = false;
+    if (button('B', 50, height - 150, 70, 70).isPress) {
+        pressBtn = true;
+        player.brake();
+    }
+
+    let speedup = button('S', width - 50, height - 150, 70, 70, true);
+    if (speedup.isPress) {
+        pressBtn = true;
+        speedup.isClick && player.speedUp();
+    }
+
+    if (!pressBtn && mouseIsPressed) {
+        let m = mouseX - width / 2 + camera.x;
+        if (m < player.pos.x) player.moveLeft();
+        if (m > player.pos.x) player.moveRight();
+    }
+}
+
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|Mac|Macintosh|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+    );
 }
