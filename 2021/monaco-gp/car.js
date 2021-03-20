@@ -10,22 +10,37 @@ class Car {
         this.braking = false;
 
         this.preTrack = createVector(x, y);
-        this.tracks = [];
+        this.wheelTracks = [];
+        this.smokeTracks = [];
     }
 
     update() {
         this.pos.add(this.vel);
-        // this.vel.y = constrain(this.vel.y, -this.maxSpeed, 0);
-        // this.vel.x = constrain(this.vel.x, -this.maxSpeed, this.maxSpeed);
         this.vel.mult(0.98);
 
         this.bound();
         this.track();
+
+        for (let i = this.smokeTracks.length - 1; i >= 0; i--) {
+            this.smokeTracks[i].update();
+
+            if (this.smokeTracks[i].isGone()) {
+                this.smokeTracks.splice(i, 1);
+            }
+        }
     }
 
     show() {
+        for (let s of this.smokeTracks) {
+            s.show();
+        }
+
         if (currentDayTime < 6 || currentDayTime > 18) {
             this.showLight();
+        }
+
+        if (-this.vel.y > this.maxSpeed + 1) {
+            this.showSpeedup();
         }
 
         if (this.img) {
@@ -45,6 +60,28 @@ class Car {
             stroke(0);
             rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
         }
+    }
+
+    showSpeedup() {
+        let pos1 = createVector(
+            this.pos.x - this.size.x / 3,
+            this.pos.y + this.size.y / 2
+        );
+        let pos2 = createVector(
+            this.pos.x + this.size.x / 3,
+            this.pos.y + this.size.y / 2
+        );
+
+        fill('orange');
+        stroke('yellow');
+        ellipse(pos1.x, pos1.y, 15, 25);
+        ellipse(pos2.x, pos2.y, 15, 25);
+
+        if (random(1) < 0.3)
+            this.smokeTracks.push(
+                new Smoke(pos1.x, pos1.y),
+                new Smoke(pos2.x, pos2.y)
+            );
     }
 
     showLight() {
@@ -80,13 +117,13 @@ class Car {
         // strokeWeight(5);
         // noFill();
         beginShape();
-        for (let t of this.tracks) {
+        for (let t of this.wheelTracks) {
             vertex(t.x - this.size.x / 2, t.y);
         }
         endShape();
 
         beginShape();
-        for (let t of this.tracks) {
+        for (let t of this.wheelTracks) {
             vertex(t.x + this.size.x / 2, t.y);
         }
         endShape();
@@ -94,11 +131,11 @@ class Car {
 
     track() {
         if (p5.Vector.dist(this.preTrack, this.pos) > 30) {
-            this.tracks.push(this.pos.copy().add(0, this.size.y / 2));
+            this.wheelTracks.push(this.pos.copy().add(0, this.size.y / 2));
             this.preTrack.set(this.pos.x, this.pos.y + this.size.y / 2);
 
-            if (this.tracks.length > 10) {
-                this.tracks.shift();
+            if (this.wheelTracks.length > 10) {
+                this.wheelTracks.shift();
             }
         }
     }

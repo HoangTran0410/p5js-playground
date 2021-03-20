@@ -6,7 +6,7 @@ let camera;
 let died;
 let ready;
 let score;
-let currentDayTime = 0;
+let currentDayTime;
 
 function preload() {
     let paths = [
@@ -28,6 +28,7 @@ function setup() {
     imageMode(CENTER);
     textFont('Consolas');
 
+    currentDayTime = random(24);
     ready = false;
     reset();
 }
@@ -50,6 +51,8 @@ function reset() {
     camera = createVector(0, 0);
     score = 0;
     died = false;
+
+    frameRate(60);
 }
 
 function draw() {
@@ -58,10 +61,10 @@ function draw() {
     if (ready) {
         // update
         if (!died) {
-            currentDayTime += 0.01;
+            currentDayTime += 0.005;
             if (currentDayTime > 24) currentDayTime = 0;
 
-            score += player.vel.mag() / 100;
+            score += -player.vel.y / 30;
 
             control();
             player.moveUp();
@@ -70,6 +73,7 @@ function draw() {
             for (let car of cars) {
                 if (player.checkCollide(car)) {
                     died = true;
+                    frameRate(15);
 
                     setTimeout(reset, 3000);
                     break;
@@ -92,7 +96,7 @@ function draw() {
             if (car.pos.y > player.pos.y + height * 2) {
                 car.pos.y = player.pos.y - random(height, height * 2);
                 car.pos.x = random(width);
-                car.tracks = [];
+                car.wheelTracks.length = 0;
             }
         }
     }
@@ -220,21 +224,31 @@ function showHint() {
     text('Press anykey to continue', width / 2, height - 10);
 }
 
+function addZero(num) {
+    return num < 10 ? '0' + num : num;
+}
+
 function drawScore() {
     textSize(25);
     textAlign(LEFT, BOTTOM);
     fill(255);
     noStroke();
-    text('Score: ' + ~~score + '\nTime: ' + ~~currentDayTime + ':00', 10, height - 10);
+
+    let mm = addZero(~~map(currentDayTime - ~~currentDayTime, 0, 1, 0, 59));
+    let daynight = currentDayTime < 6 || currentDayTime > 18 ? 'night' : 'day';
+    let timeText = `${addZero(~~currentDayTime)}:${mm} ${daynight}`;
+    let scoreText = `${~~score} m`;
+
+    text(scoreText + '\n' + timeText, 10, height - 10);
 }
 
 function drawDead() {
     textSize(45);
     textAlign(CENTER, CENTER);
     fill('red');
-    stroke('pink');
+    stroke('black');
     strokeWeight(3);
-    text(`YOU DIED\nScore: ${~~score}`, width / 2, height / 2);
+    text(`YOU DIED\nScore: ${~~score} m`, width / 2, height / 2);
 }
 
 function drawRoad() {
