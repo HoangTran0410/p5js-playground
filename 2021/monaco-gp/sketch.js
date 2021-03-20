@@ -1,6 +1,7 @@
 let assets = [];
 let cars = [];
 let smokes = [];
+let trees = [];
 let player;
 let camera;
 let daynight_icon;
@@ -38,7 +39,8 @@ function setup() {
 }
 
 function reset() {
-    for (let i = 0; i < 10; i++) {
+    cars = [];
+    for (let i = 0; i < 15; i++) {
         cars.push(
             new Car(
                 random(width),
@@ -49,6 +51,16 @@ function reset() {
                 random(assets)
             )
         );
+    }
+
+    trees = [];
+    for (let i = 0; i < 20; i++) {
+        let t = {};
+        t.y = random(-height, height);
+        t.x = random([random(-300, 0), random(width, width + 300)]);
+        t.d = random(50, 80);
+
+        trees.push(t);
     }
 
     player = new Car(width / 2, height / 2, 40, 60, 5, assets[0]);
@@ -100,8 +112,8 @@ function draw() {
         }
 
         for (let car of cars) {
-            if (car.pos.y > player.pos.y + height * 2) {
-                car.pos.y = player.pos.y - random(height, height * 2);
+            if (car.pos.y > player.pos.y + height / 2) {
+                car.pos.y = player.pos.y - random(height, height - 200);
                 car.pos.x = random(width);
                 car.wheelTracks.length = 0;
             }
@@ -112,6 +124,17 @@ function draw() {
 
             if (smokes[i].isGone()) {
                 smokes.splice(i, 1);
+            }
+        }
+
+        for (let t of trees) {
+            if (t.y > player.pos.y + height * 2) {
+                console.log('tree');
+                t.y = player.pos.y - random(height, height * 2);
+                t.x = random([
+                    random(-100, -50),
+                    random(width + 50, width + 100),
+                ]);
             }
         }
     }
@@ -128,6 +151,7 @@ function draw() {
     translate(-camera.x + width / 2, -camera.y + height - height / 2);
 
     drawRoad();
+    drawTrees();
 
     for (let s of smokes) {
         s.show();
@@ -281,6 +305,16 @@ function drawScore() {
     let scoreText = `${~~score} m`;
 
     text(scoreText + '\n' + timeText, 10, height - 10);
+}
+
+function drawTrees() {
+    stroke('#5c9700');
+    fill('#224021');
+    for (let t of trees) {
+        circle(t.x, t.y, t.d);
+
+        // line(player.pos.x, player.pos.y, t.x, t.y);
+    }
 }
 
 function drawDead() {
