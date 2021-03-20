@@ -1,5 +1,6 @@
 let assets = [];
 let cars = [];
+let smokes = [];
 let player;
 let camera;
 
@@ -102,6 +103,14 @@ function draw() {
                 car.wheelTracks.length = 0;
             }
         }
+
+        for (let i = smokes.length - 1; i >= 0; i--) {
+            smokes[i].update();
+
+            if (smokes[i].isGone()) {
+                smokes.splice(i, 1);
+            }
+        }
     }
 
     // camera follow player
@@ -116,6 +125,10 @@ function draw() {
     translate(-camera.x + width / 2, -camera.y + height - height / 2);
 
     drawRoad();
+
+    for (let s of smokes) {
+        s.show();
+    }
 
     for (let car of cars) {
         car.showTracks();
@@ -133,7 +146,8 @@ function draw() {
         showHint();
     } else {
         drawSpeed();
-        died ? drawDead() : drawScore();
+        drawScore();
+        if (died) drawDead();
     }
 }
 
@@ -151,19 +165,12 @@ function control() {
 
 function keyPressed() {
     ready = true;
-    if (keyCode == DOWN_ARROW) {
-        player.braking = true;
-    }
     if (keyCode == UP_ARROW) {
         player.speedUp();
     }
 }
 
-function keyReleased() {
-    if (keyCode == DOWN_ARROW) {
-        player.braking = false;
-    }
-}
+function keyReleased() {}
 
 function getBgColor() {
     let colors = [

@@ -7,7 +7,6 @@ class Car {
         this.img = img;
 
         this.color = [random(255), random(255), random(255)];
-        this.braking = false;
 
         this.preTrack = createVector(x, y);
         this.wheelTracks = [];
@@ -20,21 +19,9 @@ class Car {
 
         this.bound();
         this.track();
-
-        for (let i = this.smokeTracks.length - 1; i >= 0; i--) {
-            this.smokeTracks[i].update();
-
-            if (this.smokeTracks[i].isGone()) {
-                this.smokeTracks.splice(i, 1);
-            }
-        }
     }
 
     show() {
-        for (let s of this.smokeTracks) {
-            s.show();
-        }
-
         if (currentDayTime < 6 || currentDayTime > 18) {
             this.showLight();
         }
@@ -78,10 +65,7 @@ class Car {
         ellipse(pos2.x, pos2.y, 15, 25);
 
         if (random(1) < 0.3)
-            this.smokeTracks.push(
-                new Smoke(pos1.x, pos1.y),
-                new Smoke(pos2.x, pos2.y)
-            );
+            smokes.push(new Smoke(pos1.x, pos1.y), new Smoke(pos2.x, pos2.y));
     }
 
     showLight() {
