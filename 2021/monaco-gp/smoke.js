@@ -15,10 +15,11 @@ class Smoke {
     show() {
         let alpha = map(this.r, this.originalR, this.originalR * 2, 255, 50);
         fill(this.c, alpha);
+        noStroke();
         circle(this.pos.x, this.pos.y, this.r * 2);
     }
 
     isGone() {
-        return this.r <= 0;
+        return this.r > this.originalR * 2;
     }
 }

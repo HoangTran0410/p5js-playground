@@ -88,6 +88,9 @@ function draw() {
             } else if (rand < 0.2) {
                 car.moveRight();
             }
+
+            if (rand < 0.005) car.speedUp();
+
             car.moveUp();
             car.update();
         }
