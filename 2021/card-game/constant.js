@@ -1,6 +1,10 @@
+// --------------- CONFIGS ---------------
 export const CARD_LERP_SPEED = 0.5;
 export const GIVEOUT_DELAY = 50;
+export const CARD_WIDTH = 60;
+export const CARD_HEIGHT = 90;
 
+// --------------- CONSTANTS ---------------
 // sorted by ranking
 export const VALUES = [2, 'A', 'K', 'Q', 'J', 10, 9, 8, 7, 6, 5, 4, 3];
 export const SUITS = ['♥', '♦', '♠', '♣']; // Heart, Diamonds, Clubs, Spades

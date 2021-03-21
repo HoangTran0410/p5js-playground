@@ -14,8 +14,8 @@ window.setup = () => {
     game = new Game();
     game.addPlayer('Hoang', POSITION.BOTTOM);
     game.addPlayer('Hien', POSITION.TOP);
-    game.addPlayer('Nam', POSITION.RIGHT);
-    game.addPlayer('Linh', POSITION.LEFT);
+    // game.addPlayer('Nam', POSITION.RIGHT);
+    // game.addPlayer('Linh', POSITION.LEFT);
     game.newGame();
 
     console.log(game);
@@ -30,8 +30,8 @@ window.draw = () => {
     showFPS();
 };
 
-window.mousePressed = () => {
-    game.onMousePressed();
+window.mouseClicked = () => {
+    game.onMouseClicked();
 };
 
 function showFPS() {

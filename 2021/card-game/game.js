@@ -1,8 +1,16 @@
-import { GIVEOUT_DELAY, POSITION, SUITS, VALUES } from './constant.js';
+import {
+    CARD_HEIGHT,
+    CARD_WIDTH,
+    GIVEOUT_DELAY,
+    POSITION,
+    SUITS,
+    VALUES,
+} from './constant.js';
 import { testRectangleToPoint, sleep } from './helper.js';
 import Card from './card.js';
 import Player from './player.js';
 import CardHelper from './card-helper.js';
+import Button from './button.js';
 
 export default class Game {
     constructor() {
@@ -19,11 +27,23 @@ export default class Game {
         this.hoveredCard = null;
         this.selected = [];
         this.giveOutFinished = false;
+
+        this.goBtn = new Button('Đánh', width - 50, height - 80, 80, 40);
+        this.passBtn = new Button('Bỏ', width - 50, height - 30, 80, 40);
+
+        this.goBtn.onMousePressed = () => {
+            this.go(this.players[POSITION.BOTTOM], this.selected);
+            this.selected.length = 0;
+        };
     }
 
     update() {
         for (let pos in this.players) {
             if (this.players[pos]) this.players[pos].update();
+        }
+
+        for (let c of this.onBoardCards) {
+            c.update();
         }
 
         this.hoveredCard = this.getCardAt(mouseX, mouseY);
@@ -47,9 +67,13 @@ export default class Game {
         // card at mouse
         if (this.giveOutFinished) {
             if (this.hoveredCard) {
-                Card.hightlight(this.hoveredCard);
+                CardHelper.hightlight(this.hoveredCard);
             }
         }
+
+        // ui
+        this.goBtn.show();
+        this.passBtn.show();
     }
 
     showUnusedCards() {
@@ -60,7 +84,7 @@ export default class Game {
                 }
             }
 
-            Card.showHiddenCard(
+            CardHelper.showHiddenCard(
                 width / 2,
                 height / 2,
                 0,
@@ -120,6 +144,8 @@ export default class Game {
         this.unusedCards = [];
         this.hoveredCard = null;
         this.giveOutFinished = false;
+        this.goBtn.active = false;
+        this.passBtn.active = false;
 
         for (let value of VALUES) {
             for (let suit of SUITS) {
@@ -148,6 +174,7 @@ export default class Game {
         for (let i = 0; i < 13; i++) {
             for (let pos in this.players) {
                 if (this.players[pos] !== null) {
+                    if (this.unusedCards.length == 0) break;
                     this.players[pos].addCard(this.unusedCards.shift());
                     await sleep(GIVEOUT_DELAY);
                 }
@@ -164,6 +191,21 @@ export default class Game {
         }
     }
 
+    // đánh bài
+    go(player, cards) {
+        let x = width / 2 + random(-50, 50);
+        let y = height / 2 + random(-50, 50);
+
+        CardHelper.placeCards(cards, x, y);
+
+        for (let c of cards) {
+            player.removeCard(c);
+            this.onBoardCards.push(c);
+        }
+
+        console.log(player.cards);
+    }
+
     // thêm người chơi
     addPlayer(name, position) {
         if (!this.players[position])
@@ -178,7 +220,7 @@ export default class Game {
         for (let i = listCards.length - 1; i >= 0; i--) {
             const c = listCards[i];
             const { angle: a, x: cx, y: cy } = c;
-            if (testRectangleToPoint(Card.WIDTH, Card.HEIGHT, a, cx, cy, x, y))
+            if (testRectangleToPoint(CARD_WIDTH, CARD_HEIGHT, a, cx, cy, x, y))
                 return c;
         }
 
@@ -186,11 +228,14 @@ export default class Game {
     }
 
     // events
-    onMousePressed() {
+    onMouseClicked() {
         if (!this.giveOutFinished) return;
 
-        console.log("pressed")
+        // click buttons
+        this.goBtn.handleMousePressed();
+        this.passBtn.handleMousePressed();
 
+        // select card
         let cardAtMouse = this.getCardAt(mouseX, mouseY);
 
         if (cardAtMouse) {
@@ -202,8 +247,8 @@ export default class Game {
                 this.selected.splice(index, 1);
                 cardAtMouse.undoMove();
             }
-
-            console.log(CardHelper.isValidCardsCombination(this.selected));
         }
+
+        this.goBtn.active = CardHelper.isValidCardsCombination(this.selected);
     }
 }

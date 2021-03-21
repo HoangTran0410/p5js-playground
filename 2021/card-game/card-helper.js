@@ -1,8 +1,20 @@
-import { VALUES, SUITS, SORT_TYPE } from './constant.js';
+import {
+    VALUES,
+    SUITS,
+    SORT_TYPE,
+    CARD_WIDTH,
+    CARD_HEIGHT,
+} from './constant.js';
 
 export default class CardHelper {
+    static isNotMoving(card) {
+        return dist(card.x, card.y, card.desX, card.desY) < 2;
+    }
+
     // kiểm tra những cards này có hợp lệ hay không
     static isValidCardsCombination(cards) {
+        if (cards.length == 0) return false;
+
         let sorted = CardHelper.sort(cards);
 
         // same value
@@ -31,6 +43,7 @@ export default class CardHelper {
         return false;
     }
 
+    // so sánh 2 lá bài
     static compare(card1, card2) {
         let value1i = VALUES.indexOf(card1.value);
         let value2i = VALUES.indexOf(card2.value);
@@ -51,6 +64,7 @@ export default class CardHelper {
         } else return 0;
     }
 
+    // sắp xếp bài
     static sort(listCards, sortType = SORT_TYPE.DEFAULT) {
         if (sortType === SORT_TYPE.DEFAULT)
             return listCards.sort((c1, c2) => CardHelper.compare(c1, c2));
@@ -66,5 +80,67 @@ export default class CardHelper {
             );
 
         return listCards;
+    }
+
+    // đặt bài tại vị trí x,y
+    static placeCards(cards, x, y, angle = 0) {
+        let spacing = 30;
+        let halflen = cards.length / 2;
+
+        for (let i = 0; i < cards.length; i++) {
+            let desX = x - halflen * spacing + CARD_WIDTH / 2 + i * spacing;
+            cards[i].moveTo(desX, y);
+        }
+    }
+
+    // hiển thị 1 lá bài úp tại vị trí x,y
+    static showHiddenCard(x, y, a, t) {
+        let w = CARD_WIDTH;
+        let h = CARD_HEIGHT;
+
+        push();
+        translate(x, y);
+        a && rotate(a);
+
+        fill(150);
+        stroke(0);
+        strokeWeight(2);
+        rect(0, 0, w, h, 5);
+
+        stroke(175);
+        strokeWeight(3);
+        line(-w / 2 + 5, -h / 2 + 5, w / 2 - 5, h / 2 - 5);
+        line(w / 2 - 5, -h / 2 + 5, -w / 2 + 5, h / 2 - 5);
+
+        if (t) {
+            fill(255);
+            stroke(0);
+            strokeWeight(5);
+            textSize(25);
+            textAlign(CENTER, CENTER);
+            text(t, 0, 0);
+        }
+
+        pop();
+    }
+
+    // tô sáng 1 lá bài
+    static hightlight(card, colour = 'yellow') {
+        let { x, y } = card;
+        let w = CARD_WIDTH;
+        let h = CARD_HEIGHT;
+
+        // card.show()
+
+        push();
+        translate(x, y);
+        card.angle && rotate(card.angle);
+
+        noFill();
+        stroke(colour);
+        strokeWeight(4);
+        rect(0, 0, w, h, 5);
+
+        pop();
     }
 }

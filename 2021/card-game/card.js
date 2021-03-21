@@ -1,66 +1,17 @@
-import { COLORS, CARD_LERP_SPEED } from './constant.js';
+import CardHelper from './card-helper.js';
+import {
+    COLORS,
+    CARD_LERP_SPEED,
+    CARD_WIDTH,
+    CARD_HEIGHT,
+} from './constant.js';
 
 export default class Card {
-    static WIDTH = 60;
-    static HEIGHT = 90;
-
-    static showHiddenCard(x, y, a, t) {
-        let w = Card.WIDTH;
-        let h = Card.HEIGHT;
-
-        push();
-        translate(x, y);
-        a && rotate(a);
-
-        fill(150);
-        stroke(0);
-        strokeWeight(2);
-        rect(0, 0, w, h, 5);
-
-        stroke(175);
-        strokeWeight(3);
-        line(-w / 2 + 5, -h / 2 + 5, w / 2 - 5, h / 2 - 5);
-        line(w / 2 - 5, -h / 2 + 5, -w / 2 + 5, h / 2 - 5);
-
-        if (t) {
-            fill(255);
-            stroke(0);
-            strokeWeight(5);
-            textSize(25);
-            textAlign(CENTER, CENTER);
-            text(t, 0, 0);
-        }
-
-        pop();
-    }
-
-    static hightlight(card, colour = 'yellow') {
-        let { x, y } = card;
-        let w = Card.WIDTH;
-        let h = Card.HEIGHT;
-
-        // card.show()
-
-        push();
-        translate(x, y);
-        card.angle && rotate(card.angle);
-
-        noFill();
-        stroke(colour);
-        strokeWeight(4);
-        rect(0, 0, w, h, 5);
-
-        pop();
-    }
-
-    static isNotMoving(card) {
-        return dist(card.x, card.y, card.desX, card.desY) < 2;
-    }
-
     constructor(suit, value, hidden = false, x = width / 2, y = height / 2) {
         this.value = value;
         this.suit = suit;
         this.hidden = hidden;
+        this.owner = null;
 
         // for positioning
         this.x = x;
@@ -102,11 +53,11 @@ export default class Card {
 
     show() {
         let { x, y } = this;
-        let w = Card.WIDTH;
-        let h = Card.HEIGHT;
+        let w = CARD_WIDTH;
+        let h = CARD_HEIGHT;
 
         if (this.hidden) {
-            Card.showHiddenCard(x, y, this.angle);
+            CardHelper.showHiddenCard(x, y, this.angle);
         } else {
             push();
             translate(x, y);
