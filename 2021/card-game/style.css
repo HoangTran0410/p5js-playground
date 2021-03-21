@@ -1,0 +1,25 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    user-select: none;
+}
+
+html, body {
+    background-color: #222;
+    overflow: hidden;
+}
+
+.card {
+    position: absolute;
+}
+
+.card img {
+    width: 100px;
+    transition: 0.2s;
+}
+
+.card:hover img {
+    transform: scale(1.05);
+    transition: 0.05s;
+}
