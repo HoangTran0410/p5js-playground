@@ -15,22 +15,22 @@ export const COLORS = {
     '♣': 'black',
 };
 export const POSITION = {
-    TOP: 'top',
-    LEFT: 'left',
-    RIGHT: 'right',
-    BOTTOM: 'bottom',
+    TOP: 'TOP',
+    LEFT: 'LEFT',
+    RIGHT: 'RIGHT',
+    BOTTOM: 'BOTTOM',
 };
 export const SORT_TYPE = {
-    DEFAULT: 'default',
-    BY_VALUE: 'by_value',
-    BY_SUIT: 'by_suit',
+    DEFAULT: 'DEFAULT',
+    BY_VALUE: 'BY_VALUE',
+    BY_SUIT: 'BY_SUIT',
 };
 export const COMBINATION_TYPE = {
     // https://vi.wikipedia.org/wiki/B%C3%A0i_Ti%E1%BA%BFn_l%C3%AAn
-    SINGLE: 'single', // lá lẻ
-    PAIR: 'pair', // đôi - 2 lá giống nhau
-    THREE: 'three', // sảnh - 3 lá giống nhau
-    FOUR: 'four', // tứ quý - 4 lá giống nhau
-    STRAIGHT: 'straight', // sảnh - bài liên tiếp nhau
-    CONSECUTIVE_PAIRS: 'consecutive pairs', // 3 đôi thông - 3 đôi liên tiếp
+    SINGLE: 'SINGLE', // lá lẻ
+    PAIR: 'PAIR', // đôi - 2 lá giống nhau
+    THREE: 'THREE', // sảnh - 3 lá giống nhau
+    FOUR: 'FOUR', // tứ quý - 4 lá giống nhau
+    STRAIGHT: 'STRAIGHT', // sảnh - bài liên tiếp nhau
+    CONSECUTIVE_PAIRS: 'CONSECUTIVE_PAIRS', // 3 đôi thông - 3 đôi liên tiếp
 };

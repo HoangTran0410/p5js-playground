@@ -28,8 +28,8 @@ export default class Game {
         this.selected = [];
         this.giveOutFinished = false;
 
-        this.goBtn = new Button('Đánh', width - 50, height - 80, 80, 40);
-        this.passBtn = new Button('Bỏ', width - 50, height - 30, 80, 40);
+        this.goBtn = new Button('Đánh', width / 2, height / 2 - 25, 80, 40);
+        this.passBtn = new Button('Bỏ', width / 2, height / 2 + 25, 80, 40);
 
         this.goBtn.onMousePressed = () => {
             this.go(this.players[POSITION.BOTTOM], this.selected);
@@ -72,8 +72,10 @@ export default class Game {
         }
 
         // ui
-        this.goBtn.show();
-        this.passBtn.show();
+        if (this.selected.length) {
+            this.goBtn.show();
+            this.passBtn.show();
+        }
     }
 
     showUnusedCards() {
@@ -157,7 +159,7 @@ export default class Game {
             this.unusedCards.push(c);
         }
 
-        this.shuffle();
+        // this.shuffle();
         await this.giveOut();
 
         for (let pos in this.players) {
@@ -208,7 +210,7 @@ export default class Game {
 
     // thêm người chơi
     addPlayer(name, position) {
-        if (!this.players[position])
+        if (position in POSITION && !this.players[position])
             this.players[position] = new Player(name, position);
     }
 

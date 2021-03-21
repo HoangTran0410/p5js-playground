@@ -13,13 +13,13 @@ export default class Button {
 
     show() {
         if (!this.active) {
-            fill('#5555');
+            fill('#555');
             stroke('#555');
         } else if (this.isMouseHover()) {
-            fill('#999');
+            fill('#007bff');
             stroke(200);
         } else {
-            fill('#9995');
+            fill('#557bdd');
             stroke(0);
         }
         strokeWeight(2);

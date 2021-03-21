@@ -4,7 +4,7 @@ import Game from './game.js';
 let game;
 
 window.setup = () => {
-    createCanvas(800, 600);
+    createCanvas(min(windowWidth, 800), min(windowHeight, 600));
 
     rectMode(CENTER);
     textAlign(CENTER, CENTER);

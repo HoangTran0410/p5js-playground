@@ -4,6 +4,7 @@ import {
     SORT_TYPE,
     CARD_WIDTH,
     CARD_HEIGHT,
+    COMBINATION_TYPE,
 } from './constant.js';
 
 export default class CardHelper {
@@ -11,36 +12,22 @@ export default class CardHelper {
         return dist(card.x, card.y, card.desX, card.desY) < 2;
     }
 
-    // kiểm tra những cards này có hợp lệ hay không
-    static isValidCardsCombination(cards) {
-        if (cards.length == 0) return false;
+    // sắp xếp bài
+    static sort(listCards, sortType = SORT_TYPE.DEFAULT) {
+        if (sortType === SORT_TYPE.DEFAULT)
+            return listCards.sort((c1, c2) => CardHelper.compare(c1, c2));
 
-        let sorted = CardHelper.sort(cards);
+        if (sortType === SORT_TYPE.BY_VALUE)
+            return listCards.sort(
+                (c1, c2) => VALUES.indexOf(c2.value) - VALUES.indexOf(c1.value)
+            );
 
-        // same value
-        let isSameValue = true;
-        for (let c of sorted) {
-            if (c.value != sorted[0].value) {
-                isSameValue = false;
-                break;
-            }
-        }
-        if (isSameValue) return true;
+        if (sortType === SORT_TYPE.BY_SUIT)
+            return listCards.sort(
+                (c1, c2) => SUITS.indexOf(c2.suit) - SUITS.indexOf(c1.suit)
+            );
 
-        // continuous value
-        let isContinuousValue = true;
-        for (let i = 1; i < sorted.length; i++) {
-            if (
-                VALUES.indexOf(sorted[i].value) !==
-                VALUES.indexOf(sorted[i - 1].value) - 1
-            ) {
-                isContinuousValue = false;
-                break;
-            }
-        }
-        if (isContinuousValue && sorted.length >= 3) return true;
-
-        return false;
+        return listCards;
     }
 
     // so sánh 2 lá bài
@@ -64,22 +51,73 @@ export default class CardHelper {
         } else return 0;
     }
 
-    // sắp xếp bài
-    static sort(listCards, sortType = SORT_TYPE.DEFAULT) {
-        if (sortType === SORT_TYPE.DEFAULT)
-            return listCards.sort((c1, c2) => CardHelper.compare(c1, c2));
+    // kiểm tra sự kết hợp bài có hợp lệ hay không
+    static isValidCardsCombination(cards) {
+        return CardHelper.getCombinationType(cards) !== null;
+    }
 
-        if (sortType === SORT_TYPE.BY_VALUE)
-            return listCards.sort(
-                (c1, c2) => VALUES.indexOf(c2.value) - VALUES.indexOf(c1.value)
-            );
+    // xem loại kết hợp
+    static getCombinationType(cards) {
+        // empty
+        if (cards.length == 0) return null;
 
-        if (sortType === SORT_TYPE.BY_SUIT)
-            return listCards.sort(
-                (c1, c2) => SUITS.indexOf(c2.suit) - SUITS.indexOf(c1.suit)
-            );
+        // single
+        if (cards.length == 1) return COMBINATION_TYPE.SINGLE;
 
-        return listCards;
+        // pair
+        if (cards.length == 2 && cards[0].value == cards[1].value)
+            return COMBINATION_TYPE.PAIR;
+
+        // three
+        if (
+            cards.length == 3 &&
+            cards[0].value == cards[1].value &&
+            cards[1].value == cards[2].value
+        )
+            return COMBINATION_TYPE.THREE;
+
+        // four
+        if (
+            cards.length == 4 &&
+            cards[0].value == cards[1].value &&
+            cards[1].value == cards[2].value &&
+            cards[2].value == cards[3].value
+        )
+            return COMBINATION_TYPE.FOUR;
+
+        // consecutive pairs
+        // TODO this is wrong: 3 đôi thông phải LIÊN TIẾP NHAU
+        if (cards.length == 6) {
+            let sorted = CardHelper.sort(cards);
+
+            if (
+                sorted[0].value === sorted[1].value &&
+                sorted[1].value !== sorted[2].value &&
+                sorted[2].value === sorted[3].value &&
+                sorted[3].value !== sorted[4].value &&
+                sorted[4].value === sorted[5].value
+            ) {
+                return COMBINATION_TYPE.CONSECUTIVE_PAIRS;
+            }
+        }
+
+        // straight
+        if (cards.length >= 3) {
+            let sorted = CardHelper.sort(cards);
+            let isStraight = true;
+            for (let i = 1; i < sorted.length; i++) {
+                if (
+                    VALUES.indexOf(sorted[i].value) !==
+                    VALUES.indexOf(sorted[i - 1].value) - 1
+                ) {
+                    isStraight = false;
+                    break;
+                }
+            }
+            if (isStraight) return COMBINATION_TYPE.STRAIGHT;
+        }
+
+        return null;
     }
 
     // đặt bài tại vị trí x,y
