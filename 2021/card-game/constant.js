@@ -1,3 +1,6 @@
+export const CARD_LERP_SPEED = 0.5;
+export const GIVEOUT_DELAY = 50;
+
 // sorted by ranking
 export const VALUES = [2, 'A', 'K', 'Q', 'J', 10, 9, 8, 7, 6, 5, 4, 3];
 export const SUITS = ['♥', '♦', '♠', '♣']; // Heart, Diamonds, Clubs, Spades
@@ -18,8 +21,6 @@ export const SORT_TYPE = {
     BY_VALUE: 'by_value',
     BY_SUIT: 'by_suit',
 };
-export const CARD_LERP_SPEED = 0.5;
-export const GIVEOUT_DELAY = 50;
 export const COMBINATION_TYPE = {
     // https://vi.wikipedia.org/wiki/B%C3%A0i_Ti%E1%BA%BFn_l%C3%AAn
     SINGLE: 'single', // lá lẻ

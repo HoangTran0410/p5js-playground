@@ -16,7 +16,7 @@ export default class Game {
             [POSITION.RIGHT]: null,
         };
 
-        this.cardAtMouse = null;
+        this.hoveredCard = null;
         this.selected = [];
         this.giveOutFinished = false;
     }
@@ -26,7 +26,7 @@ export default class Game {
             if (this.players[pos]) this.players[pos].update();
         }
 
-        this.cardAtMouse = this.getCardAt(mouseX, mouseY);
+        this.hoveredCard = this.getCardAt(mouseX, mouseY);
     }
 
     show() {
@@ -46,8 +46,8 @@ export default class Game {
 
         // card at mouse
         if (this.giveOutFinished) {
-            if (this.cardAtMouse) {
-                Card.hightlight(this.cardAtMouse);
+            if (this.hoveredCard) {
+                Card.hightlight(this.hoveredCard);
             }
         }
     }
@@ -118,7 +118,7 @@ export default class Game {
     async newGame() {
         this.deck = [];
         this.unusedCards = [];
-        this.cardAtMouse = null;
+        this.hoveredCard = null;
         this.giveOutFinished = false;
 
         for (let value of VALUES) {
@@ -189,14 +189,18 @@ export default class Game {
     onMousePressed() {
         if (!this.giveOutFinished) return;
 
-        if (this.cardAtMouse) {
-            let index = this.selected.indexOf(this.cardAtMouse);
+        console.log("pressed")
+
+        let cardAtMouse = this.getCardAt(mouseX, mouseY);
+
+        if (cardAtMouse) {
+            let index = this.selected.indexOf(cardAtMouse);
             if (index == -1) {
-                this.selected.push(this.cardAtMouse);
-                this.cardAtMouse.moveBy(0, -30);
+                this.selected.push(cardAtMouse);
+                cardAtMouse.moveBy(0, -30);
             } else {
                 this.selected.splice(index, 1);
-                this.cardAtMouse.undoMove();
+                cardAtMouse.undoMove();
             }
 
             console.log(CardHelper.isValidCardsCombination(this.selected));
