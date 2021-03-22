@@ -13,8 +13,16 @@
 
 <body>
     <p>Your ID: <span id="myid"></span></p>
-    <input type="text" name="idinput" id="inp" placeholder="Enter target id...">
+    <input type="text" id="inp" placeholder="Enter target id...">
     <button onclick="connectInp()">Connect</button>
+
+    <br><br>
+    <textarea id="msgInp" placeholder="Enter chat msg here..." rows="5" cols="30"></textarea>
+    <button onclick="sendMsg()">Send</button>
+
+    <br>
+    <p>Logs:</p>
+    <textarea id="txlog" rows="15" cols="50"></textarea>
 </body>
 
 </html>

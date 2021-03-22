@@ -8,65 +8,66 @@ function uuidv4() {
 }
 
 const peer = new Peer(uuidv4(), { debug: 2 });
-let conn;
-let sender;
+let other;
 
 peer.on('open', function (id) {
-    console.log('my id:', id);
     document.getElementById('myid').innerHTML = id;
+});
+peer.on('disconnected', function () {
+    addLog('Connection lost. Please reconnect');
+    peer.reconnect();
+});
+peer.on('close', function () {
+    addLog('Connection destroyed');
+});
+peer.on('error', function (err) {
+    addLog(err);
 });
 
 peer.on('connection', function (c) {
     // Sender does not accept incoming connections
     // Receiver allow only a single connection
-    c.on('open', function () {
-        c.send('Hello from open');
-    });
-
-    c.on('data', function (data) {
-        console.log('Receive data: ', data);
-    });
-
-    c.on('close', function () {
-        console.log('Connection reset<br>Awaiting connection...');
-        conn = null;
-    });
-
-    console.log('Connected to: ' + c.peer);
-    conn = c;
-});
-
-peer.on('disconnected', function () {
-    console.log('Connection lost. Please reconnect');
-    peer.reconnect();
-});
-peer.on('close', function () {
-    console.log('Connection destroyed');
-});
-peer.on('error', function (err) {
-    console.log(err);
-    alert('' + err);
+    other = c;
+    setupEvents();
 });
 
 function connect(id) {
-    sender = peer.connect(id, {
+    addLog('~ Connecting...');
+
+    other = peer.connect(id, {
         reliable: true,
     });
 
-    sender.on('open', function () {
-        console.log('Connected to ', sender.peer);
-    });
+    setupEvents();
+}
 
-    sender.on('data', function (data) {
-        console.log('Received data: ', data);
+function setupEvents() {
+    other.on('open', function () {
+        addLog('~ Connected to ' + other.peer);
     });
+    other.on('data', function (data) {
+        addLog('+ Received data: ' + data);
+    });
+    other.on('close', function () {
+        addLog('- Connection closed.');
+    });
+}
 
-    sender.on('close', function () {
-        console.log('Connection closed.');
-    });
+function addLog(t) {
+    document.getElementById('txlog').value += t + '\n';
 }
 
 function connectInp() {
     let id = document.getElementById('inp').value;
     connect(id);
+}
+
+function sendMsg() {
+    let msg = document.getElementById('msgInp').value;
+    if (other) {
+        other.send(msg);
+        addLog('+ Send data: ' + msg);
+    } else {
+        addLog('x Not connected yet.');
+    }
 }
