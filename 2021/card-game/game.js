@@ -5,9 +5,10 @@ import {
     POSITION,
     SUITS,
     TURNS,
+    TURN_TIMEOUT,
     VALUES,
 } from './constant.js';
-import { testRectangleToPoint, sleep } from './helper.js';
+import { testRectangleToPoint, sleep, millisToMinutes } from './helper.js';
 import Card from './card.js';
 import Player from './player.js';
 import CardHelper from './card-helper.js';
@@ -25,11 +26,12 @@ export default class Game {
 
     resetVariables() {
         this.unusedCards = [];
-        this.onBoardCards = [];
+        this.played = [];
         this.selected = [];
         this.lastMove = [];
 
         this.turn = POSITION.BOTTOM;
+        this.turnCountDown = TURN_TIMEOUT;
         this.hoveredCard = null;
         this.giveOutFinished = false;
         this.isValidSelected = false;
@@ -55,7 +57,7 @@ export default class Game {
         this.buttons = {
             newGameBtn: new Button('Ván Mới', width - 55, height - 30, 100, 40),
             goBtn: new Button('Đánh', width / 2, height / 2 - 25, 80, 40),
-            passBtn: new Button('Bỏ', width / 2, height / 2 + 25, 80, 40),
+            passBtn: new Button('Bỏ Lượt', width / 2, height / 2 + 25, 100, 40),
         };
 
         this.buttons.newGameBtn.onMousePressed(() => {
@@ -64,11 +66,9 @@ export default class Game {
 
         this.buttons.goBtn
             .visibleIf(
-                () =>
-                    this.giveOutFinished &&
-                    this.turn == POSITION.BOTTOM &&
-                    this.isValidSelected
+                () => this.giveOutFinished && this.turn == POSITION.BOTTOM
             )
+            .activeIf(() => this.isValidSelected)
             .onMousePressed(() => {
                 this.go(this.selected);
                 this.players[POSITION.BOTTOM].sortCards();
@@ -80,7 +80,9 @@ export default class Game {
             .visibleIf(
                 () => this.giveOutFinished && this.turn == POSITION.BOTTOM
             )
-            .onMousePressed(() => {});
+            .onMousePressed(() => {
+                this.pass();
+            });
     }
 
     update() {
@@ -88,11 +90,19 @@ export default class Game {
             this.players[position].update();
         }
 
-        for (let c of this.onBoardCards) {
+        for (let c of this.played) {
             c.update();
         }
 
         this.hoveredCard = this.getCardAt(mouseX, mouseY);
+
+        if (this.giveOutFinished) {
+            this.turnCountDown -= deltaTime;
+
+            if (this.turnCountDown <= 0) {
+                this.nextTurn();
+            }
+        }
     }
 
     show() {
@@ -126,6 +136,9 @@ export default class Game {
             let np = namePos[position];
             let name = this.players[position].name;
 
+            if (this.turn == position)
+                name += '\n' + millisToMinutes(this.turnCountDown);
+
             fill(position === this.turn ? 'yellow' : 'white');
             textAlign(np[0], np[1]);
             text(name, np[2], np[3]);
@@ -157,12 +170,6 @@ export default class Game {
 
         // unused cards
         if (this.unusedCards.length) {
-            for (let c of this.unusedCards) {
-                if (!c.hidden) {
-                    c.show();
-                }
-            }
-
             CardHelper.showHiddenCard(
                 width / 2,
                 height / 2,
@@ -172,11 +179,12 @@ export default class Game {
         }
 
         // cards on board
-        for (let c of this.onBoardCards) {
+        for (let c of this.played) {
             c.show();
         }
     }
 
+    // ----------------- game actions -----------------
     // ván mới
     async newGame() {
         this.resetVariables();
@@ -224,23 +232,19 @@ export default class Game {
 
         for (let c of cards) {
             player.removeCard(c);
-            this.onBoardCards.push(c);
+            this.played.push(c);
         }
 
-        this.turn = this.getNextTurn();
+        this.nextTurn();
     }
 
-    // thêm người chơi
-    addPlayer(name, position) {
-        if (position in POSITION && !this.havePlayer(position))
-            this.players[position] = new Player(name, position);
+    // bỏ lượt
+    pass() {
+        this.nextTurn();
     }
 
-    havePlayer(position) {
-        return this.players[position] != undefined;
-    }
-
-    getNextTurn() {
+    // lượt tiếp theo
+    nextTurn() {
         let curTurnIndex = TURNS.indexOf(this.turn);
         let nextTurn = null;
 
@@ -252,22 +256,26 @@ export default class Game {
             }
         }
 
-        return nextTurn;
+        this.turn = nextTurn;
+        this.turnCountDown = TURN_TIMEOUT;
     }
 
-    getCardAt(x, y) {
-        if (!this.havePlayer(POSITION.BOTTOM)) return null;
+    // thêm người chơi
+    addPlayer(name, position) {
+        if (position in POSITION && !this.havePlayer(position))
+            this.players[position] = new Player(name, position);
+    }
 
-        let listCards = this.players[POSITION.BOTTOM].cards;
-
-        for (let i = listCards.length - 1; i >= 0; i--) {
-            const c = listCards[i];
-            const { angle: a, x: cx, y: cy } = c;
-            if (testRectangleToPoint(CARD_WIDTH, CARD_HEIGHT, a, cx, cy, x, y))
-                return c;
+    // xóa người chơi
+    async removePlayer(position) {
+        if (position in POSITION && this.havePlayer(position)) {
+            for (let c of this.players[position].cards) {
+                c.moveTo(width / 2, height / 2);
+                await sleep(GIVEOUT_DELAY);
+                this.unusedCards.push(c);
+            }
+            delete this.players[position];
         }
-
-        return null;
     }
 
     // events
@@ -296,5 +304,27 @@ export default class Game {
         this.isValidSelected =
             this.selected.length &&
             CardHelper.isValidCardsCombination(this.selected);
+    }
+
+    // ----------------- game utils -----------------
+    // kiểm tra xem vị trí position có người chơi chưa
+    havePlayer(position) {
+        return !!this.players[position];
+    }
+
+    // trả về card của người chơi (BOTTOM) tại vị trí x,y trên màn hình
+    getCardAt(x, y) {
+        if (!this.havePlayer(POSITION.BOTTOM)) return null;
+
+        let listCards = this.players[POSITION.BOTTOM].cards;
+
+        for (let i = listCards.length - 1; i >= 0; i--) {
+            const c = listCards[i];
+            const { angle: a, x: cx, y: cy } = c;
+            if (testRectangleToPoint(CARD_WIDTH, CARD_HEIGHT, a, cx, cy, x, y))
+                return c;
+        }
+
+        return null;
     }
 }

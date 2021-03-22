@@ -30,13 +30,14 @@ export const COMBINATION_TYPE = {
 };
 
 // --------------- CONFIGS ---------------
+export const TURN_TIMEOUT = 30000;
 export const CARD_LERP_SPEED = 0.5;
 export const GIVEOUT_DELAY = 50;
 export const CARD_WIDTH = 60;
 export const CARD_HEIGHT = 90;
 export const TURNS = [
     POSITION.BOTTOM,
-    POSITION.RIGH,
+    POSITION.RIGHT,
     POSITION.TOP,
     POSITION.LEFT,
 ];

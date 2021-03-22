@@ -64,7 +64,7 @@ export default class Button {
     }
 
     handleMousePressed() {
-        if (this.isMouseHover()) {
+        if (this.#activeFunc() && this.isMouseHover()) {
             this.#onMousePressedFunc();
         }
     }

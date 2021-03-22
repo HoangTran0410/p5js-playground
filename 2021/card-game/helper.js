@@ -19,3 +19,15 @@ export function collidePointRect(px, py, rx, ry, rw, rh) {
 export function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function millisToMinutes(millis) {
+    let ss = ~~(millis / 1000);
+    let m = ~~(ss / 60);
+    let s = ss % 60;
+
+    return addZero(m) + ':' + addZero(s);
+}
+
+export function addZero(num) {
+    return (num < 10 ? '0' : '') + num;
+}
