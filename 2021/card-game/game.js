@@ -33,6 +33,22 @@ export default class Game {
         this.hoveredCard = null;
         this.giveOutFinished = false;
         this.isValidSelected = false;
+
+        this.deck = [];
+
+        for (let value of VALUES) {
+            for (let suit of SUITS) {
+                this.deck.push(new Card(suit, value));
+            }
+        }
+
+        for (let c of this.deck) {
+            this.unusedCards.push(c);
+        }
+
+        for (let position in this.players) {
+            this.players[position].cards = [];
+        }
     }
 
     initUI() {
@@ -164,16 +180,6 @@ export default class Game {
     // ván mới
     async newGame() {
         this.resetVariables();
-
-        for (let value of VALUES) {
-            for (let suit of SUITS) {
-                this.deck.push(new Card(suit, value));
-            }
-        }
-
-        for (let c of this.deck) {
-            this.unusedCards.push(c);
-        }
 
         this.shuffle();
         await this.giveOut();
