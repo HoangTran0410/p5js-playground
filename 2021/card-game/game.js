@@ -4,6 +4,7 @@ import {
     GIVEOUT_DELAY,
     POSITION,
     SUITS,
+    TURNS,
     VALUES,
 } from './constant.js';
 import { testRectangleToPoint, sleep } from './helper.js';
@@ -14,32 +15,54 @@ import Button from './button.js';
 
 export default class Game {
     constructor() {
+        // this.resetVariables();
         this.deck = [];
+        this.players = {};
+
+        this.resetVariables();
+        this.initUI();
+    }
+
+    resetVariables() {
         this.unusedCards = [];
         this.onBoardCards = [];
-        this.players = {
-            [POSITION.TOP]: null,
-            [POSITION.BOTTOM]: null,
-            [POSITION.LEFT]: null,
-            [POSITION.RIGHT]: null,
-        };
-
-        this.hoveredCard = null;
         this.selected = [];
+        this.lastMove = [];
+
+        this.turn = POSITION.BOTTOM;
+        this.hoveredCard = null;
         this.giveOutFinished = false;
+        this.isValidSelected = false;
+    }
 
-        this.goBtn = new Button('Đánh', width / 2, height / 2 - 25, 80, 40);
-        this.passBtn = new Button('Bỏ', width / 2, height / 2 + 25, 80, 40);
-
-        this.goBtn.onMousePressed = () => {
-            this.go(this.players[POSITION.BOTTOM], this.selected);
-            this.selected.length = 0;
+    initUI() {
+        this.buttons = {
+            newGameBtn: new Button('Ván Mới', width - 55, height - 30, 100, 40),
+            goBtn: new Button('Đánh', width / 2, height / 2 - 25, 80, 40),
+            passBtn: new Button('Bỏ', width / 2, height / 2 + 25, 80, 40),
         };
+
+        this.buttons.newGameBtn.onMousePressed(() => {
+            this.newGame();
+        });
+
+        this.buttons.goBtn
+            .visibleIf(() => this.isValidSelected)
+            .onMousePressed(() => {
+                this.go(this.selected);
+                this.players[POSITION.BOTTOM].sortCards();
+                this.selected.length = 0;
+            });
+
+        this.buttons.passBtn
+            .setColour('#999999')
+            .visibleIf(() => this.isValidSelected)
+            .onMousePressed(() => {});
     }
 
     update() {
-        for (let pos in this.players) {
-            if (this.players[pos]) this.players[pos].update();
+        for (let position in this.players) {
+            this.players[position].update();
         }
 
         for (let c of this.onBoardCards) {
@@ -50,18 +73,8 @@ export default class Game {
     }
 
     show() {
-        // draw board
         this.showBoard();
-
-        // draw unused
-        this.showUnusedCards();
-
-        // cards on board
-        for (let c of this.onBoardCards) {
-            c.show();
-        }
-
-        // draw players cards
+        this.showLastMove();
         this.showPlayerCards();
 
         // card at mouse
@@ -72,13 +85,54 @@ export default class Game {
         }
 
         // ui
-        if (this.selected.length) {
-            this.goBtn.show();
-            this.passBtn.show();
+        for (let key in this.buttons) {
+            this.buttons[key].show();
         }
     }
 
-    showUnusedCards() {
+    showPlayerCards() {
+        // player names
+        let namePos = {
+            [POSITION.TOP]: [CENTER, TOP, width / 2, height / 2 - 190],
+            [POSITION.BOTTOM]: [CENTER, BOTTOM, width / 2, height / 2 + 190],
+            [POSITION.LEFT]: [LEFT, CENTER, 85, height / 2],
+            [POSITION.RIGHT]: [RIGHT, CENTER, width - 85, height / 2],
+        };
+        noStroke();
+        for (let position in this.players) {
+            let np = namePos[position];
+            let name = this.players[position].name;
+
+            fill(position === this.turn ? 'yellow' : 'white');
+            textAlign(np[0], np[1]);
+            text(name, np[2], np[3]);
+        }
+
+        // player cards
+        for (let position in this.players) {
+            if (position === POSITION.BOTTOM) {
+                this.players[position].showCards();
+            } else {
+                this.players[position].showCardsHidden();
+            }
+        }
+    }
+
+    showLastMove() {
+        for (let c of this.lastMove) {
+            CardHelper.hightlight(c);
+        }
+    }
+
+    showBoard() {
+        // board
+        fill('#067254');
+        stroke('#878F95');
+        strokeWeight(10);
+        rect(width / 2, height / 2, width - 150, height - 200, 200);
+        circle(width / 2, height / 2, 200);
+
+        // unused cards
         if (this.unusedCards.length) {
             for (let c of this.unusedCards) {
                 if (!c.hidden) {
@@ -93,61 +147,16 @@ export default class Game {
                 this.unusedCards.length
             );
         }
-    }
 
-    showPlayerCards() {
-        for (let pos in this.players) {
-            if (this.players[pos]) {
-                if (pos === POSITION.BOTTOM) {
-                    this.players[pos].showCards();
-                } else {
-                    this.players[pos].showCardsHidden();
-                }
-            }
-        }
-    }
-
-    showBoard() {
-        // board
-        fill('#067254');
-        stroke('#878F95');
-        strokeWeight(10);
-        rect(width / 2, height / 2, width - 150, height - 200, 200);
-        circle(width / 2, height / 2, 200);
-
-        // player names
-        fill('yellow');
-        noStroke();
-        if (this.players[POSITION.TOP]) {
-            textAlign(CENTER, TOP);
-            text(this.players[POSITION.TOP].name, width / 2, height / 2 - 190);
-        }
-        if (this.players[POSITION.BOTTOM]) {
-            textAlign(CENTER, BOTTOM);
-            text(
-                this.players[POSITION.BOTTOM].name,
-                width / 2,
-                height / 2 + 190
-            );
-        }
-        if (this.players[POSITION.LEFT]) {
-            textAlign(LEFT, CENTER);
-            text(this.players[POSITION.LEFT].name, 85, height / 2);
-        }
-        if (this.players[POSITION.RIGHT]) {
-            textAlign(RIGHT, CENTER);
-            text(this.players[POSITION.RIGHT].name, width - 85, height / 2);
+        // cards on board
+        for (let c of this.onBoardCards) {
+            c.show();
         }
     }
 
     // ván mới
     async newGame() {
-        this.deck = [];
-        this.unusedCards = [];
-        this.hoveredCard = null;
-        this.giveOutFinished = false;
-        this.goBtn.active = false;
-        this.passBtn.active = false;
+        this.resetVariables();
 
         for (let value of VALUES) {
             for (let suit of SUITS) {
@@ -159,29 +168,27 @@ export default class Game {
             this.unusedCards.push(c);
         }
 
-        // this.shuffle();
+        this.shuffle();
         await this.giveOut();
 
-        for (let pos in this.players) {
-            if (this.players[pos]) this.players[pos].sortCards();
+        for (let position in this.players) {
+            this.players[position].sortCards();
         }
-
-        await sleep(1000);
-
-        this.giveOutFinished = true;
     }
 
     // chia bài
     async giveOut() {
+        this.giveOutFinished = false;
+
         for (let i = 0; i < 13; i++) {
-            for (let pos in this.players) {
-                if (this.players[pos] !== null) {
-                    if (this.unusedCards.length == 0) break;
-                    this.players[pos].addCard(this.unusedCards.shift());
-                    await sleep(GIVEOUT_DELAY);
-                }
+            for (let position in this.players) {
+                if (this.unusedCards.length == 0) break;
+                this.players[position].addCard(this.unusedCards.shift());
+                await sleep(GIVEOUT_DELAY);
             }
         }
+
+        this.giveOutFinished = true;
     }
 
     // xáo bài
@@ -194,28 +201,49 @@ export default class Game {
     }
 
     // đánh bài
-    go(player, cards) {
+    go(cards) {
+        let player = this.players[this.turn];
         let x = width / 2 + random(-50, 50);
         let y = height / 2 + random(-50, 50);
 
         CardHelper.placeCards(cards, x, y);
+        this.lastMove = [...cards];
 
         for (let c of cards) {
             player.removeCard(c);
             this.onBoardCards.push(c);
         }
 
-        console.log(player.cards);
+        this.turn = this.getNextTurn();
     }
 
     // thêm người chơi
     addPlayer(name, position) {
-        if (position in POSITION && !this.players[position])
+        if (position in POSITION && !this.havePlayer(position))
             this.players[position] = new Player(name, position);
     }
 
+    havePlayer(position) {
+        return this.players[position] != undefined;
+    }
+
+    getNextTurn() {
+        let curTurnIndex = TURNS.indexOf(this.turn);
+        let nextTurn = null;
+
+        while (!nextTurn) {
+            curTurnIndex = (curTurnIndex + 1) % TURNS.length;
+
+            if (this.havePlayer(TURNS[curTurnIndex])) {
+                nextTurn = TURNS[curTurnIndex];
+            }
+        }
+
+        return nextTurn;
+    }
+
     getCardAt(x, y) {
-        if (!this.players[POSITION.BOTTOM]) return null;
+        if (!this.havePlayer(POSITION.BOTTOM)) return null;
 
         let listCards = this.players[POSITION.BOTTOM].cards;
 
@@ -234,8 +262,9 @@ export default class Game {
         if (!this.giveOutFinished) return;
 
         // click buttons
-        this.goBtn.handleMousePressed();
-        this.passBtn.handleMousePressed();
+        for (let key in this.buttons) {
+            this.buttons[key].handleMousePressed();
+        }
 
         // select card
         let cardAtMouse = this.getCardAt(mouseX, mouseY);
@@ -251,6 +280,8 @@ export default class Game {
             }
         }
 
-        this.goBtn.active = CardHelper.isValidCardsCombination(this.selected);
+        this.isValidSelected =
+            this.selected.length &&
+            CardHelper.isValidCardsCombination(this.selected);
     }
 }

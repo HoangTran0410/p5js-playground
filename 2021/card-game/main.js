@@ -17,8 +17,6 @@ window.setup = () => {
     // game.addPlayer('Nam', POSITION.RIGHT);
     // game.addPlayer('Linh', POSITION.LEFT);
     game.newGame();
-
-    console.log(game);
 };
 
 window.draw = () => {
