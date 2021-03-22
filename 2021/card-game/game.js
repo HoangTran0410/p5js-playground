@@ -47,7 +47,12 @@ export default class Game {
         });
 
         this.buttons.goBtn
-            .visibleIf(() => this.isValidSelected)
+            .visibleIf(
+                () =>
+                    this.giveOutFinished &&
+                    this.turn == POSITION.BOTTOM &&
+                    this.isValidSelected
+            )
             .onMousePressed(() => {
                 this.go(this.selected);
                 this.players[POSITION.BOTTOM].sortCards();
@@ -55,8 +60,10 @@ export default class Game {
             });
 
         this.buttons.passBtn
-            .setColour('#999999')
-            .visibleIf(() => this.isValidSelected)
+            .setColour('#dd4252')
+            .visibleIf(
+                () => this.giveOutFinished && this.turn == POSITION.BOTTOM
+            )
             .onMousePressed(() => {});
     }
 

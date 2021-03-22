@@ -47,7 +47,7 @@ export default class Button {
             fill(this.colour);
             stroke(200);
         } else {
-            fill(this.colour + 'bb');
+            fill(this.colour + 'ee');
             stroke(0);
         }
         strokeWeight(2);
