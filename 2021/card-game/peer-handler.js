@@ -7,7 +7,12 @@ function uuidv4() {
     );
 }
 
-const peer = new Peer(uuidv4(), { debug: 2 });
+const peer = new Peer(uuidv4(), {
+    secure: true,
+    host: 'hoang-peerjs-server.herokuapp.com',
+    port: 443,
+    debug: 2,
+});
 let other;
 
 peer.on('open', function (id) {
