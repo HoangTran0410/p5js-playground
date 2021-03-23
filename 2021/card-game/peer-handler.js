@@ -7,7 +7,7 @@ function uuidv4() {
     );
 }
 
-const peer = new Peer(uuidv4(), {
+let peer = new Peer(uuidv4(), {
     secure: true,
     host: 'hoang-peerjs-server.herokuapp.com',
     port: 443,
@@ -68,7 +68,10 @@ function connectInp() {
 }
 
 function sendMsg() {
-    let msg = document.getElementById('msgInp').value;
+    let inp = document.getElementById('msgInp')
+    let msg = inp.value;
+    inp.value = '';
+
     if (other) {
         other.send(msg);
         addLog('+ Send data: ' + msg);
