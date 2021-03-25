@@ -1,5 +1,5 @@
-import { POSITION, CARD_HEIGHT, CARD_WIDTH } from './constant.js';
-import CardHelper from './card-helper.js';
+import { POSITION, CARD_HEIGHT, CARD_WIDTH } from '../constant.js';
+import CardHelper from '../helper/card-helper.js';
 
 export default class Player {
     constructor(name, posType, cards = []) {

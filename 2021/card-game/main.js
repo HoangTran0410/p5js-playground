@@ -1,35 +1,41 @@
-import { POSITION } from './constant.js';
-import Game from './game.js';
+import { SwalForce } from './helper/swal-helper.js';
+import PeerHost from './peer/peer-host.js';
+import PeerClient from './peer/peer-client.js';
 
-let game;
+let peerHandler;
 
-window.setup = () => {
+window.setup = async () => {
     createCanvas(min(windowWidth, 800), min(windowHeight, 600));
-
     rectMode(CENTER);
     textAlign(CENTER, CENTER);
     textFont('Consolas');
     textStyle('bold');
 
-    game = new Game();
-    game.addPlayer('Hoang', POSITION.BOTTOM);
-    game.addPlayer('Hien', POSITION.TOP);
-    // game.addPlayer('Nam', POSITION.RIGHT);
-    // game.addPlayer('Linh', POSITION.LEFT);
-    game.newGame();
+    let { value: hostmode } = await SwalForce.fire({
+        title: 'Chào mừng tới CardGame',
+        text: 'Tiến Lên Miền Nam',
+        showCancelButton: true,
+        confirmButtonText: 'Tạo phòng',
+        cancelButtonText: 'Vào phòng',
+    });
+
+    if (hostmode) {
+        peerHandler = new PeerHost();
+    } else {
+        peerHandler = new PeerClient();
+    }
 };
 
 window.draw = () => {
     background(50);
 
-    game.update();
-    game.show();
+    peerHandler && peerHandler.run();
 
     showFPS();
 };
 
 window.mouseClicked = () => {
-    game.onMouseClicked();
+    peerHandler && peerHandler.onMouseClicked();
 };
 
 function showFPS() {

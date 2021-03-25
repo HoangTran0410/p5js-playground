@@ -5,7 +5,7 @@ import {
     CARD_WIDTH,
     CARD_HEIGHT,
     COMBINATION_TYPE,
-} from './constant.js';
+} from '../constant.js';
 
 export default class CardHelper {
     static isNotMoving(card) {

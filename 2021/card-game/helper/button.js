@@ -3,7 +3,7 @@ import { collidePointRect } from './helper.js';
 export default class Button {
     #activeFunc = () => true;
     #visibleFunc = () => true;
-    #onMousePressedFunc = () => {};
+    #onMouseClickedFunc = () => {};
 
     constructor(t, x, y, w = 50, h = 50) {
         this.t = t;
@@ -30,8 +30,8 @@ export default class Button {
         return this;
     }
 
-    onMousePressed(func) {
-        this.#onMousePressedFunc = func;
+    onMouseClicked(func) {
+        this.#onMouseClickedFunc = func;
         return this;
     }
 
@@ -63,9 +63,9 @@ export default class Button {
         return collidePointRect(mouseX, mouseY, this.x, this.y, this.w, this.h);
     }
 
-    handleMousePressed() {
+    handleMouseClicked() {
         if (this.#activeFunc() && this.isMouseHover()) {
-            this.#onMousePressedFunc();
+            this.#onMouseClickedFunc();
         }
     }
 }

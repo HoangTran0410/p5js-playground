@@ -28,8 +28,26 @@ export const COMBINATION_TYPE = {
     STRAIGHT: 'STRAIGHT', // sảnh - bài liên tiếp nhau
     CONSECUTIVE_PAIRS: 'CONSECUTIVE_PAIRS', // 3 đôi thông - 3 đôi liên tiếp
 };
+export const PEER_DATA_EVENTS = {
+    SYNCGAME: 'SYNCGAME',
+    CLIENT_LEAVE: 'CLIENT_LEAVE',
+    CLIENT_JOIN: 'CLIENT_JOIN',
+    START_GAME: 'START_GAME',
+    EJECT: 'EJECT',
+    GIVEOUT: 'GIVEOUT',
+};
 
 // --------------- CONFIGS ---------------
+// export const PEERJS_SERVER = {
+//     SECURE: false,
+//     HOST: 'localhost', //'hoang-peerjs-server.herokuapp.com',
+//     PORT: 9000,
+// };
+export const PEERJS_SERVER = {
+    SECURE: true,
+    HOST: 'hoang-peerjs-server.herokuapp.com',
+    PORT: 443,
+};
 export const TURN_TIMEOUT = 30000;
 export const CARD_LERP_SPEED = 0.5;
 export const GIVEOUT_DELAY = 50;

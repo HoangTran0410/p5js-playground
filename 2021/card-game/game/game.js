@@ -7,16 +7,20 @@ import {
     TURNS,
     TURN_TIMEOUT,
     VALUES,
-} from './constant.js';
-import { testRectangleToPoint, sleep, millisToMinutes } from './helper.js';
+} from '../constant.js';
+import {
+    testRectangleToPoint,
+    sleep,
+    millisToMinutes,
+} from '../helper/helper.js';
+
+import Button from '../helper/button.js';
+import CardHelper from '../helper/card-helper.js';
 import Card from './card.js';
 import Player from './player.js';
-import CardHelper from './card-helper.js';
-import Button from './button.js';
 
 export default class Game {
     constructor() {
-        // this.resetVariables();
         this.deck = [];
         this.players = {};
 
@@ -30,7 +34,7 @@ export default class Game {
         this.selected = [];
         this.lastMove = [];
 
-        this.turn = POSITION.BOTTOM;
+        this.turn = null;
         this.turnCountDown = TURN_TIMEOUT;
         this.hoveredCard = null;
         this.giveOutFinished = false;
@@ -60,7 +64,7 @@ export default class Game {
             passBtn: new Button('Bỏ Lượt', width / 2, height / 2 + 25, 100, 40),
         };
 
-        this.buttons.newGameBtn.onMousePressed(() => {
+        this.buttons.newGameBtn.onMouseClicked(() => {
             this.newGame();
         });
 
@@ -69,7 +73,7 @@ export default class Game {
                 () => this.giveOutFinished && this.turn == POSITION.BOTTOM
             )
             .activeIf(() => this.isValidSelected)
-            .onMousePressed(() => {
+            .onMouseClicked(() => {
                 this.go(this.selected);
                 this.players[POSITION.BOTTOM].sortCards();
                 this.selected.length = 0;
@@ -80,7 +84,7 @@ export default class Game {
             .visibleIf(
                 () => this.giveOutFinished && this.turn == POSITION.BOTTOM
             )
-            .onMousePressed(() => {
+            .onMouseClicked(() => {
                 this.pass();
             });
     }
@@ -186,11 +190,11 @@ export default class Game {
 
     // ----------------- game actions -----------------
     // ván mới
-    async newGame() {
+    async newGame(onGiveout = () => {}) {
         this.resetVariables();
 
         this.shuffle();
-        await this.giveOut();
+        await this.giveOut(onGiveout);
 
         for (let position in this.players) {
             this.players[position].sortCards();
@@ -198,13 +202,15 @@ export default class Game {
     }
 
     // chia bài
-    async giveOut() {
+    async giveOut(onGiveout) {
         this.giveOutFinished = false;
 
         for (let i = 0; i < 13; i++) {
             for (let position in this.players) {
                 if (this.unusedCards.length == 0) break;
-                this.players[position].addCard(this.unusedCards.shift());
+                let card = this.unusedCards.shift();
+                this.players[position].addCard(card);
+                onGiveout(this.players[position], card);
                 await sleep(GIVEOUT_DELAY);
             }
         }
@@ -284,7 +290,7 @@ export default class Game {
 
         // click buttons
         for (let key in this.buttons) {
-            this.buttons[key].handleMousePressed();
+            this.buttons[key].handleMouseClicked();
         }
 
         // select card

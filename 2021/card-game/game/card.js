@@ -1,10 +1,10 @@
-import CardHelper from './card-helper.js';
+import CardHelper from '../helper/card-helper.js';
 import {
     COLORS,
     CARD_LERP_SPEED,
     CARD_WIDTH,
     CARD_HEIGHT,
-} from './constant.js';
+} from '../constant.js';
 
 export default class Card {
     constructor(suit, value, hidden = false, x = width / 2, y = height / 2) {
