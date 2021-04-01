@@ -5,7 +5,7 @@ class BoidManager {
     let { width: w, height: h, depth: d } = BoidSetting.container;
     for (let i = 0; i < numberOfBoids; i++) {
       let b = new Boid();
-      b.position.set(random(-w, w), random(-h, h), random(-d, d));
+      b.position.set(random(-w / 2, w / 2), random(-h / 2, h / 2), 0);
       this.boids.push(b);
     }
   }
@@ -22,7 +22,6 @@ class BoidManager {
   }
 
   show() {
-    noStroke();
     for (let boid of this.boids) {
       boid.show();
     }

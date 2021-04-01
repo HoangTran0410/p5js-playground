@@ -18,16 +18,27 @@ function setup() {
 function draw() {
   background(30);
 
+  // container box
+  push();
+  {
+    stroke(50);
+    noFill();
+    box(
+      BoidSetting.container.width,
+      BoidSetting.container.height,
+      BoidSetting.container.depth
+    );
+  }
+  pop();
+
+  // light
+  fill(255);
+  sphere(5);
   pointLight(255, 255, 255, 0, 0, 0);
 
-  stroke(50);
-  noFill();
-  box(
-    BoidSetting.container.width,
-    BoidSetting.container.height,
-    BoidSetting.container.depth
-  );
-
+  // boids
+  noStroke();
+  ambientLight(30);
   boidManager.update();
   boidManager.show();
 }

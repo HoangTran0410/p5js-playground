@@ -146,18 +146,20 @@ class Boid {
   }
 
   show() {
-    let angleZ = createVector(this.velocity.x, this.velocity.y).heading() - PI/2;
-    let angleX = createVector(this.velocity.y, this.velocity.z).heading();
-    let angleY = createVector(this.velocity.x, this.velocity.z).heading();
+    // let angleZ = createVector(this.velocity.x, this.velocity.y).heading();
+    // let angleX = createVector(this.velocity.y, this.velocity.z).heading();
+    // let angleY = createVector(this.velocity.x, this.velocity.z).heading();
 
     push();
     {
       translate(this.position.x, this.position.y, this.position.z);
       fill(this.colour);
 
-      rotateZ(angleZ);
-      rotateX(angleX);
-      rotateY(angleY);
+      rotate(this.velocity.heading() - PI/2);
+
+      // rotateZ(angleZ);
+      // rotateX(angleX);
+      // rotateY(angleY);
 
       cone(this.radius, this.radius * 2);
     }
