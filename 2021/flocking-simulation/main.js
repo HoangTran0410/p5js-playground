@@ -5,13 +5,15 @@ let fps = 0;
 function setup() {
   if (mobileCheck()) {
     createCanvas(windowWidth, windowHeight);
-  } else createCanvas(800, 600);
+    boidManager = new BoidManager(BoidSetting.numberOfBoidsMobile);
+  } else {
+    createCanvas(800, 600);
+    boidManager = new BoidManager(BoidSetting.numberOfBoids);
+  }
 
   setInterval(() => {
     fps = ~~frameRate();
   }, 500);
-
-  boidManager = new BoidManager(BoidSetting.numberOfBoids);
 }
 
 function draw() {

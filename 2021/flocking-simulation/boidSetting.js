@@ -5,6 +5,7 @@ const BoidShape = {
 };
 
 const BoidSetting = {
+  numberOfBoidsMobile: 70,
   numberOfBoids: 200,
   boidShape: BoidShape.triangle,
   boidRadius: 5,
