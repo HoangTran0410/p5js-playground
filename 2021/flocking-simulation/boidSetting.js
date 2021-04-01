@@ -5,14 +5,14 @@ const BoidShape = {
 };
 
 const BoidSetting = {
-  numberOfBoids: 250,
+  numberOfBoids: 200,
   boidShape: BoidShape.triangle,
   boidRadius: 5,
 
   minSpeed: 1.5,
   maxSpeed: 3,
   maxSteerForce: 0.2,
-  avoidWall: false,
+  avoidWall: true,
 
   alignWeight: 1,
   cohesionWeight: 0.5,
@@ -20,10 +20,9 @@ const BoidSetting = {
   avoidWallWeight: 2,
   targetWeight: 2,
 
-  perceptionRadius: 40,
+  perceptionRadius: 25,
   avoidanceRadius: 20,
-  avoidWallRadius: 40,
-  sightAngle: (Math.PI * 3) / 2,
+  avoidWallRadius: 20,
 
   useQuadtree: true,
   drawQuadtree: false,

@@ -16,6 +16,18 @@ class BoidManager {
     this.boids[0].debug = true;
   }
 
+  addBoid(x, y, buffer = 5) {
+    let boid = new Boid();
+    boid.position.set(x + random(-buffer, buffer), y + random(-buffer, buffer));
+    this.boids.push(boid);
+
+    if (this.boids.length > BoidSetting.numberOfBoids) {
+      let first = this.boids.shift(); // take out first
+      this.boids.shift(); // remove second
+      this.boids.unshift(first); // re-append first
+    }
+  }
+
   update() {
     if (BoidSetting.useQuadtree) {
       this.boidsTree.clear();

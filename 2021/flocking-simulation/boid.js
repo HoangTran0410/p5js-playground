@@ -168,16 +168,6 @@ class Boid {
       circle(0, 0, BoidSetting.perceptionRadius * 2);
       stroke("red");
       circle(0, 0, BoidSetting.avoidanceRadius * 2);
-
-      //   arc(
-      //     0,
-      //     0,
-      //     2 * BoidSetting.perceptionRadius,
-      //     2 * BoidSetting.perceptionRadius,
-      //     -BoidSetting.sightAngle / 2,
-      //     BoidSetting.sightAngle / 2,
-      //     PIE
-      //   );
     }
 
     pop();
