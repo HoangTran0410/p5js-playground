@@ -34,4 +34,4 @@ Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các b
 3. [Spring Forces](./2021/spring-forces/) (simulation) (*3*)
 4. [Monaco GP](./2021/monaco-gp/) (Racing game) (*3*)
 5. [Card Game](./2021/card-game/) (*3*)
-6. [Flock Simulation](./2021/flock-simulation/) (*3*)
+6. [Flock Simulation](./2021/flocking-simulation/) (*3*)
