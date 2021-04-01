@@ -1,20 +1,20 @@
 let stats;
 let boidManager;
+let fps = 0;
 
 function setup() {
   if (mobileCheck()) {
     createCanvas(windowWidth, windowHeight);
   } else createCanvas(800, 600);
 
-  stats = new Stats();
-  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-  document.body.appendChild(stats.dom);
+  setInterval(() => {
+    fps = ~~frameRate();
+  }, 500);
 
   boidManager = new BoidManager(BoidSetting.numberOfBoids);
 }
 
 function draw() {
-  stats.begin();
   background(30);
 
   if (mouseIsPressed) {
@@ -25,13 +25,19 @@ function draw() {
   boidManager.show();
 
   showCursor();
-  stats.end();
+  showFPS(5, 10);
 }
 
 function showCursor() {
   noFill();
   stroke(200);
   circle(mouseX, mouseY, 20);
+}
+
+function showFPS(x, y) {
+  fill(200);
+  noStroke();
+  text(fps + " FPS", x, y);
 }
 
 // https://stackoverflow.com/a/11381730
