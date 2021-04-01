@@ -4,7 +4,7 @@ class Boid {
     this.position = createVector();
     this.velocity = p5.Vector.random3D();
     this.radius = BoidSetting.boidRadius;
-    this.colour = [random(100, 255), random(100, 255), random(100, 255)];
+    this.colour = [random(0, 255), random(0, 255), random(0, 255)];
 
     // to update
     this.acceleration = createVector();
@@ -146,17 +146,20 @@ class Boid {
   }
 
   show() {
-    let angle = this.velocity.heading();
+    let angleZ = createVector(this.velocity.x, this.velocity.y).heading() - PI/2;
+    let angleX = createVector(this.velocity.y, this.velocity.z).heading();
+    let angleY = createVector(this.velocity.x, this.velocity.z).heading();
 
     push();
     {
       translate(this.position.x, this.position.y, this.position.z);
       fill(this.colour);
-      ambientMaterial(this.colour);
-      rotateZ(angle - PI / 2);
-      box(this.radius, this.radius * 2, this.radius)
-      // cone(this.radius, this.radius * 2);
-      // sphere(this.radius);
+
+      rotateZ(angleZ);
+      rotateX(angleX);
+      rotateY(angleY);
+
+      cone(this.radius, this.radius * 2);
     }
     pop();
   }
