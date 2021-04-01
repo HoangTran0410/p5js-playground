@@ -11,6 +11,7 @@ class BoidManager {
       6
     );
 
+    this.maxBoids = numberOfBoids;
     this.boids = [];
     for (let i = 0; i < numberOfBoids; i++) this.boids.push(new Boid());
     this.boids[0].debug = true;
@@ -21,7 +22,7 @@ class BoidManager {
     boid.position.set(x + random(-buffer, buffer), y + random(-buffer, buffer));
     this.boids.push(boid);
 
-    if (this.boids.length > BoidSetting.numberOfBoids) {
+    if (this.boids.length > this.maxBoids) {
       let first = this.boids.shift(); // take out first
       this.boids.shift(); // remove second
       this.boids.unshift(first); // re-append first
