@@ -80,8 +80,10 @@ class Boid {
       this.acceleration.add(seperationForce);
     }
 
-    let avoidWalls = this.avoidWalls().mult(BoidSetting.avoidWallWeight);
-    this.acceleration.add(avoidWalls);
+    if (BoidSetting.avoidWall) {
+      let avoidWalls = this.avoidWalls().mult(BoidSetting.avoidWallWeight);
+      this.acceleration.add(avoidWalls);
+    }
   }
 
   getBoidsInSight(boids) {

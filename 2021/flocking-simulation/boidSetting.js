@@ -12,7 +12,7 @@ const BoidSetting = {
   minSpeed: 1.5,
   maxSpeed: 3,
   maxSteerForce: 0.2,
-  avoidWall: true,
+  avoidWall: false,
 
   alignWeight: 1,
   cohesionWeight: 0.5,
