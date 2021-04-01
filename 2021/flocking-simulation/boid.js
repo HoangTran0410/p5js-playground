@@ -1,22 +1,9 @@
 class Boid {
-  static minSpeed = 2;
-  static maxSpeed = 5;
-  static maxSteerForce = 0.1;
-
-  static alignWeight = 1;
-  static cohesionWeight = 0.5;
-  static seperateWeight = 1.5;
-  static targetWeight = 2;
-
-  static perceptionRadius = 100;
-  static avoidanceRadius = 40;
-  static sightAngle = (Math.PI * 3) / 2;
-
   constructor(target) {
     // state
     this.position = createVector(random(width), random(height));
     this.velocity = p5.Vector.random2D();
-    this.radius = 7;
+    this.radius = BoidSetting.boidRadius;
     this.debug = false;
 
     // to update
@@ -27,7 +14,7 @@ class Boid {
   update() {
     this.velocity.add(this.acceleration);
     let speed = this.velocity.mag();
-    speed = constrain(speed, Boid.minSpeed, Boid.maxSpeed);
+    speed = constrain(speed, BoidSetting.minSpeed, BoidSetting.maxSpeed);
     this.velocity.setMag(speed);
 
     this.position.add(this.velocity);
@@ -39,18 +26,18 @@ class Boid {
     let centreOfFlockmates = createVector();
     let avgSeperationHeading = createVector();
 
-    let visibleBoids = this.getBoidsInSight(boids);
+    let boidsInSight = this.getBoidsInSight(boids);
 
-    for (let other of visibleBoids) {
+    for (let other of boidsInSight) {
       let offset = p5.Vector.sub(other.position, this.position);
       let dst = offset.mag();
 
-      if (dst < Boid.perceptionRadius) {
+      if (dst < BoidSetting.perceptionRadius) {
         numPerceivedFlockmates += 1;
         avgAlignmentHeading.add(other.velocity);
         centreOfFlockmates.add(other.position);
 
-        if (dst < Boid.avoidanceRadius) {
+        if (dst < BoidSetting.avoidanceRadius) {
           avgSeperationHeading.sub(offset.div(dst * dst));
         }
       }
@@ -68,7 +55,7 @@ class Boid {
     if (this.target != null) {
       let offsetToTarget = p5.Vector.sub(this.target, this.position);
       this.acceleration = this.steerTowards(offsetToTarget).mult(
-        Boid.targetWeight
+        BoidSetting.targetWeight
       );
     }
 
@@ -79,19 +66,22 @@ class Boid {
       );
 
       let alignmentForce = this.steerTowards(avgAlignmentHeading).mult(
-        Boid.alignWeight
+        BoidSetting.alignWeight
       );
       let cohesionForce = this.steerTowards(offsetToFlockmatesCentre).mult(
-        Boid.cohesionWeight
+        BoidSetting.cohesionWeight
       );
       let seperationForce = this.steerTowards(avgSeperationHeading).mult(
-        Boid.seperateWeight
+        BoidSetting.seperateWeight
       );
 
       this.acceleration.add(alignmentForce);
       this.acceleration.add(cohesionForce);
       this.acceleration.add(seperationForce);
     }
+
+    let avoidWalls = this.avoidWalls().mult(BoidSetting.avoidWallWeight);
+    this.acceleration.add(avoidWalls);
   }
 
   getBoidsInSight(boids) {
@@ -102,22 +92,13 @@ class Boid {
     for (let boid of boids) {
       if (boid == this) continue;
 
-      let inBack = collidePointArc(
-        boid.position.x,
-        boid.position.y,
-        this.position.x,
-        this.position.y,
-        Boid.perceptionRadius,
-        this.velocity.heading() + PI,
-        2 * PI - Boid.sightAngle
-      );
-
       let inCircle =
-        p5.Vector.dist(this.position, boid.position) <= Boid.perceptionRadius;
+        p5.Vector.dist(this.position, boid.position) <=
+        BoidSetting.perceptionRadius;
 
-      if (inCircle && !inBack) {
+      if (inCircle) {
         inSight.push(boid);
-        this.debug && circle(boid.position.x, boid.position.y, 20);
+        this.debug && circle(boid.position.x, boid.position.y, this.radius * 3);
       }
     }
 
@@ -125,8 +106,23 @@ class Boid {
   }
 
   steerTowards(vector) {
-    let v = vector.copy().setMag(Boid.maxSpeed).sub(this.velocity);
-    return v.limit(Boid.maxSteerForce);
+    let v = vector.copy().setMag(BoidSetting.maxSpeed).sub(this.velocity);
+    return v.limit(BoidSetting.maxSteerForce);
+  }
+
+  avoidWalls() {
+    let range = BoidSetting.avoidWallRadius;
+    if (
+      this.position.y < range ||
+      this.position.y > height - range ||
+      this.position.x < range ||
+      this.position.x > width - range
+    ) {
+      return this.steerTowards(
+        p5.Vector.sub(createVector(width / 2, height / 2), this.position)
+      );
+    }
+    return createVector();
   }
 
   edges() {
@@ -149,29 +145,37 @@ class Boid {
     translate(this.position.x, this.position.y);
     rotate(angle);
 
-    stroke(255);
-    fill(0);
-    triangle(
-      -this.radius,
-      -this.radius / 1.5,
-      this.radius,
-      0,
-      -this.radius,
-      this.radius / 1.5
-    );
+    if (BoidSetting.boidShape == BoidShape.triangle) {
+      triangle(
+        -this.radius,
+        -this.radius / 1.5,
+        this.radius,
+        0,
+        -this.radius,
+        this.radius / 1.5
+      );
+    } else if (BoidSetting.boidShape == BoidShape.line) {
+      line(0, 0, this.radius * 2, 0);
+    } else if (BoidSetting.boidShape == BoidShape.point) {
+      circle(0, 0, this.radius * 2);
+    }
 
     if (this.debug) {
-      fill(30, 100);
+      noFill();
       stroke(150, 100);
-      arc(
-        0,
-        0,
-        2 * Boid.perceptionRadius,
-        2 * Boid.perceptionRadius,
-        -Boid.sightAngle / 2,
-        Boid.sightAngle / 2,
-        PIE
-      );
+      circle(0, 0, BoidSetting.perceptionRadius * 2);
+      stroke("red");
+      circle(0, 0, BoidSetting.avoidanceRadius * 2);
+
+      //   arc(
+      //     0,
+      //     0,
+      //     2 * BoidSetting.perceptionRadius,
+      //     2 * BoidSetting.perceptionRadius,
+      //     -BoidSetting.sightAngle / 2,
+      //     BoidSetting.sightAngle / 2,
+      //     PIE
+      //   );
     }
 
     pop();
