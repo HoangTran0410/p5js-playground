@@ -20,7 +20,7 @@ export default class AI {
 
         let type = CardHelper.getCombinationType(lastMove);
 
-        for (let i = 0; i < cards.length - len; i++) {
+        for (let i = 0; i < cards.length - len + 1; i++) {
             let c = cards.slice(i, i + len);
             if (
                 CardHelper.isCombinationType(c, type) &&
