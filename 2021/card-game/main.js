@@ -1,8 +1,8 @@
-import { SwalForce } from './helper/swal-helper.js';
-import PeerHost from './peer/peer-host.js';
-import PeerClient from './peer/peer-client.js';
+import { SIDE } from './constant.js';
+import Game from './game/game.js';
 
-let peerHandler;
+let game;
+let fps = 0;
 
 window.setup = async () => {
     createCanvas(min(windowWidth, 800), min(windowHeight, 600));
@@ -10,32 +10,27 @@ window.setup = async () => {
     textAlign(CENTER, CENTER);
     textFont('Consolas');
     textStyle('bold');
+    imageMode(CENTER);
 
-    let { value: hostmode } = await SwalForce.fire({
-        title: 'Chào mừng tới CardGame',
-        text: 'Tiến Lên Miền Nam',
-        showCancelButton: true,
-        confirmButtonText: 'Tạo phòng',
-        cancelButtonText: 'Vào phòng',
-    });
+    setInterval(() => {
+        fps = ~~frameRate();
+    }, 1000);
 
-    if (hostmode) {
-        peerHandler = new PeerHost();
-    } else {
-        peerHandler = new PeerClient();
-    }
+    game = new Game();
+    game.newGame();
 };
 
 window.draw = () => {
     background(50);
 
-    peerHandler && peerHandler.run();
+    game.update();
+    game.show();
 
     showFPS();
 };
 
 window.mouseClicked = () => {
-    peerHandler && peerHandler.onMouseClicked();
+    game.onMouseClicked();
 };
 
 function showFPS() {
@@ -43,5 +38,5 @@ function showFPS() {
     noStroke();
     textAlign(CENTER, CENTER);
     textSize(20);
-    text(~~frameRate(), 15, 15);
+    text(fps, 15, 15);
 }

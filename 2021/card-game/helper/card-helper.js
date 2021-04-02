@@ -1,15 +1,17 @@
 import {
     VALUES,
     SUITS,
+    COLORS,
     SORT_TYPE,
+    SIDE,
     CARD_WIDTH,
     CARD_HEIGHT,
     COMBINATION_TYPE,
 } from '../constant.js';
 
 export default class CardHelper {
-    static isNotMoving(card) {
-        return dist(card.x, card.y, card.desX, card.desY) < 2;
+    static isMoving(card) {
+        return dist(card.x, card.y, card.desX, card.desY) > 2;
     }
 
     // sắp xếp bài
@@ -64,7 +66,7 @@ export default class CardHelper {
             return CardHelper.compare(biggest1, biggest2);
         }
 
-        // special compare
+        // TODO: special compare
         // tứ quý - heo
         // 3 đôi thông - heo
     }
@@ -148,6 +150,19 @@ export default class CardHelper {
         return false;
     }
 
+    static getPlayerPosition(side) {
+        switch (side) {
+            case SIDE.TOP:
+                return { x: width / 2, y: CARD_HEIGHT / 2 };
+            case SIDE.BOTTOM:
+                return { x: width / 2, y: height - CARD_HEIGHT / 2 };
+            case SIDE.LEFT:
+                return { x: CARD_WIDTH / 2, y: height / 2 };
+            case SIDE.RIGHT:
+                return { x: width - CARD_WIDTH / 2, y: height / 2 };
+        }
+    }
+
     // đặt bài tại vị trí x,y
     static placeCards(cards, x, y, angle = 0) {
         let spacing = 30;
@@ -159,24 +174,76 @@ export default class CardHelper {
         }
     }
 
-    // hiển thị 1 lá bài úp tại vị trí x,y
-    static showHiddenCard(x, y, a, t) {
+    // hiển thị 1 lá bài ngửa tại vị trí x,y
+    static cardGraphics = {};
+    static showCard(suit, value, x, y, angle) {
+        let key = value + suit;
+        if (!CardHelper.cardGraphics[key]) {
+            CardHelper.cardGraphics[key] = CardHelper.generateCardGraphic(
+                suit,
+                value
+            );
+        }
+
+        push();
+        translate(x, y);
+        angle && rotate(angle);
+        image(CardHelper.cardGraphics[key], 0, 0);
+        pop();
+    }
+
+    static generateCardGraphic(suit, value) {
         let w = CARD_WIDTH;
         let h = CARD_HEIGHT;
+        let _ = createGraphics(w, h);
+
+        _.fill(255);
+        _.stroke(150);
+        _.strokeWeight(2);
+        _.rect(1, 1, w - 2, h - 2, 5);
+
+        _.noStroke();
+        _.fill(COLORS[suit]);
+
+        _.textFont('Consolas');
+        _.textStyle('bold');
+        _.textSize(25);
+        _.textAlign(LEFT, TOP);
+        _.text(suit, 5, 30);
+
+        if (('' + value).length > 1) _.textSize(23);
+        _.text(value, 5, 5);
+
+        return _;
+    }
+
+    // hiển thị 1 lá bài úp tại vị trí x,y
+    static hiddenCardGraphics = null;
+    static showHiddenCard(x, y, a, t) {
+        if (CardHelper.hiddenCardGraphics == null) {
+            let w = CARD_WIDTH;
+            let h = CARD_HEIGHT;
+
+            CardHelper.hiddenCardGraphics = createGraphics(w, h);
+
+            let _ = CardHelper.hiddenCardGraphics; // ref
+
+            _.fill(150);
+            _.stroke(30);
+            _.strokeWeight(2);
+            _.rect(1, 1, w - 2, h - 2, 5);
+
+            _.stroke(175);
+            _.strokeWeight(3);
+            _.line(5, 5, w - 5, h - 5);
+            _.line(w - 5, 5, 5, h - 5);
+        }
 
         push();
         translate(x, y);
         a && rotate(a);
 
-        fill(150);
-        stroke(0);
-        strokeWeight(2);
-        rect(0, 0, w, h, 5);
-
-        stroke(175);
-        strokeWeight(3);
-        line(-w / 2 + 5, -h / 2 + 5, w / 2 - 5, h / 2 - 5);
-        line(w / 2 - 5, -h / 2 + 5, -w / 2 + 5, h / 2 - 5);
+        image(CardHelper.hiddenCardGraphics, 0, 0);
 
         if (t) {
             fill(255);
@@ -195,8 +262,6 @@ export default class CardHelper {
         let { x, y } = card;
         let w = CARD_WIDTH;
         let h = CARD_HEIGHT;
-
-        // card.show()
 
         push();
         translate(x, y);

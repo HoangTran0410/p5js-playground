@@ -1,10 +1,5 @@
 import CardHelper from '../helper/card-helper.js';
-import {
-    COLORS,
-    CARD_LERP_SPEED,
-    CARD_WIDTH,
-    CARD_HEIGHT,
-} from '../constant.js';
+import { CARD_LERP_SPEED } from '../constant.js';
 
 export default class Card {
     constructor(suit, value, hidden = false, x = width / 2, y = height / 2) {
@@ -52,33 +47,10 @@ export default class Card {
     }
 
     show() {
-        let { x, y } = this;
-        let w = CARD_WIDTH;
-        let h = CARD_HEIGHT;
+        let { x, y, angle, suit, value } = this;
 
-        if (this.hidden) {
-            CardHelper.showHiddenCard(x, y, this.angle);
-        } else {
-            push();
-            translate(x, y);
-            this.angle && rotate(this.angle);
-
-            fill(255);
-            stroke(30);
-            strokeWeight(2);
-            rect(0, 0, w, h, 5);
-
-            noStroke();
-            fill(COLORS[this.suit]);
-
-            textSize(25);
-            textAlign(LEFT, TOP);
-            text(this.suit, -w / 2 + 5, -h / 2 + 30);
-
-            if (('' + this.value).length > 1) textSize(23);
-            text(this.value, -w / 2 + 5, -h / 2 + 5);
-
-            pop();
-        }
+        this.hidden
+            ? CardHelper.showHiddenCard(x, y, angle)
+            : CardHelper.showCard(suit, value, x, y, angle);
     }
 }
