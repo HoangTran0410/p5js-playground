@@ -49,6 +49,7 @@ export default class Player {
         }
         this.selected = [];
         this.sortCards();
+        this.isValidSelected = false;
     }
 
     toggleSelect(card) {
@@ -66,9 +67,19 @@ export default class Player {
     }
 
     updateValidSelected() {
+        let notEmpty = this.selected.length;
+        let validCombination = CardHelper.isValidCardsCombination(
+            this.selected
+        );
+        let biggerThanLastMove =
+            Board.instance.lastMove.length == 0 ||
+            CardHelper.compareCombination(
+                this.selected,
+                Board.instance.lastMove
+            ) == 1;
+
         this.isValidSelected =
-            this.selected.length &&
-            CardHelper.isValidCardsCombination(this.selected);
+            notEmpty && validCombination && biggerThanLastMove;
     }
 
     sortCards(sortType) {
@@ -78,16 +89,22 @@ export default class Player {
 
     addCard(card) {
         this.cards.push(card);
-        card.owner = this;
+        // card.owner = this;
         this.updateCardsPosition();
     }
 
     removeCard(card) {
         let i = this.cards.indexOf(card);
         if (i !== -1) {
-            if (this.cards[i].owner == this) this.cards[i].owner = null;
+            // if (this.cards[i].owner == this) this.cards[i].owner = null;
             this.cards.splice(i, 1);
         }
+    }
+
+    removeAllCards() {
+        this.cards.length = 0;
+        this.selected.length = 0;
+        this.updateValidSelected();
     }
 
     updateCardsPosition() {

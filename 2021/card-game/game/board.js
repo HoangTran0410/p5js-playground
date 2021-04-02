@@ -16,18 +16,15 @@ import {
 import CardHelper from '../helper/card-helper.js';
 import Player from './player.js';
 import Card from './card.js';
+import Game from './game.js';
+import AI from './ai.js';
 
 export default class Board {
     static instance = null;
 
     constructor() {
         Board.instance = this;
-
-        this.players = {
-            // [SIDE.BOTTOM]: null,
-            // [SIDE.TOP]: null,
-        };
-
+        this.players = {};
         this.reset();
     }
 
@@ -35,14 +32,15 @@ export default class Board {
         this.deck = [];
         this.unused = [];
         this.played = [];
-        this.selected = [];
         this.lastMove = [];
-        this.hovered = null;
 
         this.turn = SIDE.BOTTOM;
         this.turnCountDown = TURN_TIMEOUT;
         this.giveOutFinished = false;
-        this.isValidSelected = false;
+
+        for (let position in this.players) {
+            this.players[position].removeAllCards();
+        }
 
         for (let value of VALUES) {
             for (let suit of SUITS) {
@@ -50,13 +48,7 @@ export default class Board {
             }
         }
 
-        for (let c of this.deck) {
-            this.unused.push(c);
-        }
-
-        for (let position in this.players) {
-            this.players[position].cards = [];
-        }
+        this.unused.push(...this.deck);
     }
 
     update() {
@@ -72,7 +64,7 @@ export default class Board {
             this.turnCountDown -= deltaTime;
 
             if (this.turnCountDown <= 0) {
-                this.nextTurn();
+                this.pass();
             }
         }
     }
@@ -180,21 +172,24 @@ export default class Board {
         let x = width / 2 + random(-50, 50);
         let y = height / 2 + random(-50, 50);
 
+        cards.forEach((card) => (card.hidden = false));
         CardHelper.placeCards(cards, x, y, random(-0.5, 0.5));
 
-        this.lastMove.forEach((card) => (card.hightlight = false));
-        this.lastMove = [...cards];
-        this.lastMove.forEach((card) => (card.hightlight = true));
-
-        for (let c of cards) {
-            this.played.push(c);
-        }
+        this.setLastMove(cards);
+        this.played.push(...cards);
 
         this.nextTurn();
     }
 
+    setLastMove(cards = []) {
+        this.lastMove.forEach((card) => (card.hightlight = false));
+        this.lastMove = [...cards];
+        this.lastMove.forEach((card) => (card.hightlight = true));
+    }
+
     // bỏ lượt
     pass() {
+        this.setLastMove([]);
         this.nextTurn();
     }
 
@@ -213,6 +208,16 @@ export default class Board {
 
         this.turn = nextTurn;
         this.turnCountDown = TURN_TIMEOUT;
+
+        // AI check turn
+        let curPlayer = this.getCurrentPlayer();
+        if (curPlayer != Game.instance.mainPlayer) {
+            setTimeout(() => AI.go(curPlayer), 1000);
+        }
+    }
+
+    getCurrentPlayer() {
+        return this.players[this.turn];
     }
 
     // thêm người chơi

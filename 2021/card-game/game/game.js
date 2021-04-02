@@ -3,17 +3,22 @@ import { wireP5Event } from '../helper/helper.js';
 import CardHelper from '../helper/card-helper.js';
 import Button from '../helper/button.js';
 import Board from './board.js';
+import AI from './ai.js';
 
 export default class Game {
+    static instance = null;
+
     constructor() {
+        Game.instance = this;
+
         this.board = new Board();
         this.hoveredCard = null;
 
+        this.mainPlayer = this.board.addPlayer('Hoang', SIDE.BOTTOM);
+        this.topPlayer = this.board.addPlayer('Hien', SIDE.TOP);
+
         this.initUI();
         wireP5Event('mouseClicked', this.onMouseClicked.bind(this));
-
-        this.mainPlayer = this.board.addPlayer('Hoang', SIDE.BOTTOM);
-        this.board.addPlayer('Hien', SIDE.TOP, true);
     }
 
     newGame() {
@@ -85,8 +90,6 @@ export default class Game {
 
     // events
     onMouseClicked() {
-        // if (!this.board.giveOutFinished) return;
-
         // click buttons
         for (let key in this.buttons) {
             this.buttons[key].handleMouseClicked();
