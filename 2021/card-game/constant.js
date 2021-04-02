@@ -1,12 +1,12 @@
 // --------------- CONSTANTS ---------------
 // sorted by ranking
 export const VALUES = [2, 'A', 'K', 'Q', 'J', 10, 9, 8, 7, 6, 5, 4, 3];
-export const SUITS = ['♥', '♦', '♠', '♣']; // Heart, Diamonds, Clubs, Spades
+export const SUITS = ['♥', '♦', '♣', '♠']; // Heart, Diamonds, Clubs, Spades
 export const COLORS = {
     '♥': 'red',
     '♦': 'red',
-    '♠': 'black',
     '♣': 'black',
+    '♠': 'black',
 };
 export const SIDE = {
     TOP: 'TOP',
@@ -31,13 +31,8 @@ export const COMBINATION_TYPE = {
 
 // --------------- CONFIGS ---------------
 export const TURN_TIMEOUT = 30000;
-export const CARD_LERP_SPEED = 0.5;
+export const CARD_LERP_SPEED = 0.3;
 export const GIVEOUT_DELAY = 50;
 export const CARD_WIDTH = 60;
 export const CARD_HEIGHT = 90;
-export const TURNS = [
-    SIDE.BOTTOM,
-    SIDE.RIGHT,
-    SIDE.TOP,
-    SIDE.LEFT,
-];
+export const TURNS = [SIDE.BOTTOM, SIDE.RIGHT, SIDE.TOP, SIDE.LEFT];

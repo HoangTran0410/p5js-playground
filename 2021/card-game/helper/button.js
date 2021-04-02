@@ -15,6 +15,10 @@ export default class Button {
         this.colour = '#007bff';
     }
 
+    setText(t) {
+        this.t = t;
+    }
+
     setColour(c) {
         this.colour = c;
         return this;

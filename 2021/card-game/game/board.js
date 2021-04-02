@@ -178,7 +178,18 @@ export default class Board {
         this.setLastMove(cards);
         this.played.push(...cards);
 
-        this.nextTurn();
+        if (this.checkWin()) setTimeout(() => this.newGame(), 2000);
+        else this.nextTurn();
+    }
+
+    checkWin() {
+        for (let side in this.players) {
+            if (this.players[side].cards.length == 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     setLastMove(cards = []) {

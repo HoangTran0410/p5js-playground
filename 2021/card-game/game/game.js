@@ -3,7 +3,6 @@ import { wireP5Event } from '../helper/helper.js';
 import CardHelper from '../helper/card-helper.js';
 import Button from '../helper/button.js';
 import Board from './board.js';
-import AI from './ai.js';
 
 export default class Game {
     static instance = null;
@@ -15,7 +14,7 @@ export default class Game {
         this.hoveredCard = null;
 
         this.mainPlayer = this.board.addPlayer('Hoang', SIDE.BOTTOM);
-        this.topPlayer = this.board.addPlayer('Hien', SIDE.TOP);
+        this.board.addPlayer('Hien', SIDE.TOP, true);
 
         this.initUI();
         wireP5Event('mouseClicked', this.onMouseClicked.bind(this));
@@ -48,6 +47,7 @@ export default class Game {
             )
             .activeIf(() => this.mainPlayer.isValidSelected)
             .onMouseClicked(() => {
+                this.buttons.goBtn.setText('Đánh'); // reset label
                 this.mainPlayer.go();
             });
 
@@ -105,6 +105,11 @@ export default class Game {
         if (cardAtMouse) {
             let isSelected = this.mainPlayer.toggleSelect(cardAtMouse);
             isSelected ? cardAtMouse.moveBy(0, -30) : cardAtMouse.undoMove();
+
+            let selectedCound = this.mainPlayer.selected.length;
+            this.buttons.goBtn.setText(
+                selectedCound > 0 ? 'Đánh ' + selectedCound : 'Đánh'
+            );
         }
     }
 }

@@ -26,12 +26,13 @@ export default class Player {
                 }
             }
 
-            CardHelper.showHiddenCard(
-                this.position.x,
-                this.position.y,
-                0,
-                this.cards.length
-            );
+            this.cards.length > 0 &&
+                CardHelper.showHiddenCard(
+                    this.position.x,
+                    this.position.y,
+                    0,
+                    this.cards.length
+                );
         } else {
             for (let c of this.cards) {
                 c.show();
@@ -43,13 +44,16 @@ export default class Player {
     go() {
         if (this.selected.length == 0) return;
 
-        Board.instance.go(this.selected);
         for (let c of this.selected) {
             this.removeCard(c);
         }
+
+        let temp = [...this.selected];
         this.selected = [];
-        this.sortCards();
         this.isValidSelected = false;
+        this.sortCards();
+
+        Board.instance.go(temp);
     }
 
     toggleSelect(card) {
