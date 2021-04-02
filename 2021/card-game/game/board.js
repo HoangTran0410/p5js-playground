@@ -18,7 +18,11 @@ import Player from './player.js';
 import Card from './card.js';
 
 export default class Board {
+    static instance = null;
+
     constructor() {
+        Board.instance = this;
+
         this.players = {
             // [SIDE.BOTTOM]: null,
             // [SIDE.TOP]: null,
@@ -64,8 +68,6 @@ export default class Board {
             c.update();
         }
 
-        this.hoveredCard = this.getCardAt(mouseX, mouseY);
-
         if (this.giveOutFinished) {
             this.turnCountDown -= deltaTime;
 
@@ -77,13 +79,7 @@ export default class Board {
 
     show() {
         this.showBoard();
-        this.showLastMove();
         this.showPlayerCards();
-
-        // hovered card
-        if (this.giveOutFinished && this.hoveredCard) {
-            CardHelper.hightlight(this.hoveredCard);
-        }
     }
 
     showPlayerCards() {
@@ -94,6 +90,7 @@ export default class Board {
             [SIDE.LEFT]: [LEFT, CENTER, 85, height / 2],
             [SIDE.RIGHT]: [RIGHT, CENTER, width - 85, height / 2],
         };
+
         noStroke();
         for (let position in this.players) {
             let np = namePos[position];
@@ -110,12 +107,6 @@ export default class Board {
         // player cards
         for (let position in this.players) {
             this.players[position].show();
-        }
-    }
-
-    showLastMove() {
-        for (let c of this.lastMove) {
-            CardHelper.hightlight(c);
         }
     }
 
@@ -186,15 +177,16 @@ export default class Board {
 
     // đánh bài
     go(cards) {
-        let player = this.players[this.turn];
         let x = width / 2 + random(-50, 50);
         let y = height / 2 + random(-50, 50);
 
-        CardHelper.placeCards(cards, x, y);
+        CardHelper.placeCards(cards, x, y, random(-0.5, 0.5));
+
+        this.lastMove.forEach((card) => (card.hightlight = false));
         this.lastMove = [...cards];
+        this.lastMove.forEach((card) => (card.hightlight = true));
 
         for (let c of cards) {
-            player.removeCard(c);
             this.played.push(c);
         }
 
@@ -225,12 +217,16 @@ export default class Board {
 
     // thêm người chơi
     addPlayer(name, side, hidden = false) {
-        if (side in SIDE && !this.havePlayer(side))
+        if (side in SIDE && !this.havePlayer(side)) {
             this.players[side] = new Player(
                 name,
-                hidden,
-                CardHelper.getPlayerPosition(side)
+                CardHelper.getPlayerPosition(side),
+                hidden
             );
+
+            return this.players[side];
+        }
+        return null;
     }
 
     // xóa người chơi
@@ -245,40 +241,14 @@ export default class Board {
         }
     }
 
-    // events
-    onMouseClicked() {
-        if (!this.giveOutFinished) return;
-
-        // select card
-        let cardAtMouse = this.getCardAt(mouseX, mouseY);
-
-        if (cardAtMouse) {
-            let index = this.selected.indexOf(cardAtMouse);
-            if (index == -1) {
-                this.selected.push(cardAtMouse);
-                cardAtMouse.moveBy(0, -30);
-            } else {
-                this.selected.splice(index, 1);
-                cardAtMouse.undoMove();
-            }
-        }
-
-        this.isValidSelected =
-            this.selected.length &&
-            CardHelper.isValidCardsCombination(this.selected);
-    }
-
     // ----------------- board utils -----------------
     // kiểm tra xem vị trí 'side' có người chơi chưa
     havePlayer(side) {
         return !!this.players[side];
     }
 
-    // trả về card của người chơi (BOTTOM) tại vị trí x,y trên màn hình
-    getCardAt(x, y) {
-        let listCards = this.players[SIDE.BOTTOM].cards;
-        // let listCards = this.deck;
-
+    // trả về card thuộc listCards tại vị trí x,y trên màn hình
+    getCardAt(x, y, listCards = this.deck) {
         for (let i = listCards.length - 1; i >= 0; i--) {
             const c = listCards[i];
             const { angle: a, x: cx, y: cy } = c;

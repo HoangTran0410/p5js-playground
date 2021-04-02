@@ -30,7 +30,7 @@ export const COMBINATION_TYPE = {
 };
 
 // --------------- CONFIGS ---------------
-export const TURN_TIMEOUT = 30000;
+export const TURN_TIMEOUT = 5000;
 export const CARD_LERP_SPEED = 0.5;
 export const GIVEOUT_DELAY = 50;
 export const CARD_WIDTH = 60;

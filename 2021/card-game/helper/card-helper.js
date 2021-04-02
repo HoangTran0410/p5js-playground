@@ -169,8 +169,11 @@ export default class CardHelper {
         let halflen = cards.length / 2;
 
         for (let i = 0; i < cards.length; i++) {
-            let desX = x - halflen * spacing + CARD_WIDTH / 2 + i * spacing;
-            cards[i].moveTo(desX, y);
+            let dx = -halflen * spacing + CARD_WIDTH / 2 + i * spacing;
+            let des = createVector(dx, 0).rotate(angle).add(x, y);
+
+            cards[i].moveTo(des.x, des.y);
+            cards[i].angle = angle;
         }
     }
 

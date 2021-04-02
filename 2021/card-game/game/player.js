@@ -1,11 +1,15 @@
 import CardHelper from '../helper/card-helper.js';
+import Board from './board.js';
 
 export default class Player {
-    constructor(name, hidden = false, position = createVector(), cards = []) {
+    constructor(name, position = createVector(), hidden = false, cards = []) {
         this.name = name;
         this.cards = cards;
         this.hidden = hidden;
         this.position = position;
+
+        this.selected = [];
+        this.isValidSelected = false;
     }
 
     update() {
@@ -33,6 +37,38 @@ export default class Player {
                 c.show();
             }
         }
+    }
+
+    // đánh bài đang chọn
+    go() {
+        if (this.selected.length == 0) return;
+
+        Board.instance.go(this.selected);
+        for (let c of this.selected) {
+            this.removeCard(c);
+        }
+        this.selected = [];
+        this.sortCards();
+    }
+
+    toggleSelect(card) {
+        let index = this.selected.indexOf(card);
+        index == -1 ? this.selected.push(card) : this.selected.splice(index, 1);
+
+        this.updateValidSelected();
+
+        return index == -1;
+    }
+
+    selectCards(cards) {
+        this.selected = cards;
+        this.updateValidSelected();
+    }
+
+    updateValidSelected() {
+        this.isValidSelected =
+            this.selected.length &&
+            CardHelper.isValidCardsCombination(this.selected);
     }
 
     sortCards(sortType) {

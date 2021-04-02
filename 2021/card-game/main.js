@@ -1,4 +1,3 @@
-import { SIDE } from './constant.js';
 import Game from './game/game.js';
 
 let game;
@@ -27,10 +26,6 @@ window.draw = () => {
     game.show();
 
     showFPS();
-};
-
-window.mouseClicked = () => {
-    game.onMouseClicked();
 };
 
 function showFPS() {

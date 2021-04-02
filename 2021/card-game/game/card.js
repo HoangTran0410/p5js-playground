@@ -7,6 +7,7 @@ export default class Card {
         this.suit = suit;
         this.hidden = hidden;
         this.owner = null;
+        this.hightlight = false;
 
         // for positioning
         this.x = x;
@@ -52,5 +53,7 @@ export default class Card {
         this.hidden
             ? CardHelper.showHiddenCard(x, y, angle)
             : CardHelper.showCard(suit, value, x, y, angle);
+
+        if (this.hightlight) CardHelper.hightlight(this);
     }
 }

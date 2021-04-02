@@ -31,3 +31,7 @@ export function millisToMinutes(millis) {
 export function addZero(num) {
     return (num < 10 ? '0' : '') + num;
 }
+
+export function wireP5Event(eventName, callback) {
+    window[eventName] = callback;
+}
