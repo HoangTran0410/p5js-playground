@@ -15,7 +15,7 @@ export default class CardHelper {
     }
 
     // sắp xếp bài
-    static sort(listCards, sortType = SORT_TYPE.DEFAULT) {
+    static sort(listCards, sortType = SORT_TYPE.DEFAULT, desc = false) {
         if (sortType === SORT_TYPE.DEFAULT)
             return listCards.sort((c1, c2) => CardHelper.compare(c1, c2));
 
@@ -29,7 +29,7 @@ export default class CardHelper {
                 (c1, c2) => SUITS.indexOf(c2.suit) - SUITS.indexOf(c1.suit)
             );
 
-        return listCards;
+        return desc ? listCards.reverse() : listCards;
     }
 
     // so sánh 2 lá bài
@@ -60,8 +60,8 @@ export default class CardHelper {
 
         // same type
         if (type1 === type2) {
-            let biggest1 = CardHelper.sort(cards1)[0];
-            let biggest2 = CardHelper.sort(cards2)[0];
+            let biggest1 = CardHelper.sort(cards1, null, true)[0];
+            let biggest2 = CardHelper.sort(cards2, null, true)[0];
 
             return CardHelper.compare(biggest1, biggest2);
         }
