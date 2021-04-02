@@ -200,7 +200,6 @@ export default class Board {
 
     // bỏ lượt
     pass() {
-        this.setLastMove([]);
         this.nextTurn();
     }
 
@@ -219,6 +218,13 @@ export default class Board {
 
         this.turn = nextTurn;
         this.turnCountDown = TURN_TIMEOUT;
+
+        // check lastmove
+        if (
+            this.lastMove.length &&
+            this.lastMove[0].owner == this.getCurrentPlayer()
+        )
+            this.setLastMove([]);
 
         // AI check turn
         let curPlayer = this.getCurrentPlayer();

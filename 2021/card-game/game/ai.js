@@ -7,7 +7,7 @@ export default class AI {
         let { cards } = player;
 
         let len = lastMove.length;
-        if (len == 0) {
+        if (len == 0 || lastMove[0].owner == player) {
             player.selectCards([cards[0]]);
             player.go();
             return;

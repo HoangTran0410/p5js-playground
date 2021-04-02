@@ -15,6 +15,9 @@ export default class Game {
 
         this.mainPlayer = this.board.addPlayer('Hoang', SIDE.BOTTOM);
         this.board.addPlayer('Hien', SIDE.TOP, true);
+        this.board.addPlayer('Hien', SIDE.LEFT, true);
+        this.board.addPlayer('Hien', SIDE.RIGHT, true);
+
 
         this.initUI();
         wireP5Event('mouseClicked', this.onMouseClicked.bind(this));

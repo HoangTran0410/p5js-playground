@@ -93,7 +93,7 @@ export default class Player {
 
     addCard(card) {
         this.cards.push(card);
-        // card.owner = this;
+        card.owner = this;
         this.updateCardsPosition();
     }
 
