@@ -26,7 +26,23 @@ export const COMBINATION_TYPE = {
     THREE: 'THREE', // sảnh - 3 lá giống nhau
     FOUR: 'FOUR', // tứ quý - 4 lá giống nhau
     STRAIGHT: 'STRAIGHT', // sảnh - bài liên tiếp nhau
-    CONSECUTIVE_PAIRS: 'CONSECUTIVE_PAIRS', // 3 đôi thông - 3 đôi liên tiếp
+    CONSECUTIVE_PAIRS: 'CONSECUTIVE_PAIRS', // n đôi thông - n đôi liên tiếp
+};
+export const SPECIAL_COMBINATION_TYPE = {
+    TWO: 'TWO', // 1 heo
+    DOUBLE_TWO: 'DOUBLE_TWO', // đôi heo
+    TRIPLE_TWO: 'TRIPLE_TWO', // 3 heo
+    QUAD_TWO: 'QUAD_TWO', // tứ quý heo
+    THREE_PAIRS: 'THREE_PAIRS', // 3 đôi thông
+    FOUR_PAIRS: 'FOUR_PAIRS', // 4 đôi thông
+};
+export const COMPARE_TEMPLATE = {
+    // tứ quý - 1 heo, 3 heo
+    FOUR: ['TWO', 'TRIPLE_TWO'],
+    // 3 đôi thông - 1 heo
+    THREE_PAIRS: ['TWO'],
+    // 4 đôi thông - 1 heo, 2 heo, 3 heo, tứ quý
+    FOUR_PAIRS: ['DOUBLE_TWO', 'TRIPLE_TWO', 'THREE_PAIRS', 'FOUR'],
 };
 
 // --------------- CONFIGS ---------------

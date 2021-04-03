@@ -14,9 +14,9 @@ export default class Game {
         this.hoveredCard = null;
 
         this.mainPlayer = this.board.addPlayer('Hoang', SIDE.BOTTOM);
+        this.board.addPlayer('Nam', SIDE.RIGHT, true);
         this.board.addPlayer('Hien', SIDE.TOP, true);
         this.board.addPlayer('Linh', SIDE.LEFT, true);
-        this.board.addPlayer('Nam', SIDE.RIGHT, true);
 
 
         this.initUI();

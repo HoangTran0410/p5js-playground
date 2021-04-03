@@ -219,15 +219,15 @@ export default class Board {
         this.turn = nextTurn;
         this.turnCountDown = TURN_TIMEOUT;
 
+        // update valid select
+        let curPlayer = this.getCurrentPlayer();
+        curPlayer.updateValidSelected();
+
         // check lastmove
-        if (
-            this.lastMove.length &&
-            this.lastMove[0].owner == this.getCurrentPlayer()
-        )
+        if (this.lastMove.length && this.lastMove[0].owner == curPlayer)
             this.setLastMove([]);
 
         // AI check turn
-        let curPlayer = this.getCurrentPlayer();
         if (curPlayer != Game.instance.mainPlayer) {
             setTimeout(() => AI.go(curPlayer), 1000);
         }

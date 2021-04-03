@@ -7,7 +7,27 @@ import {
     CARD_WIDTH,
     CARD_HEIGHT,
     COMBINATION_TYPE,
+    SPECIAL_COMBINATION_TYPE,
+    COMPARE_TEMPLATE,
 } from '../constant.js';
+
+const {
+    TWO,
+    DOUBLE_TWO,
+    TRIPLE_TWO,
+    QUAD_TWO,
+    THREE_PAIRS,
+    FOUR_PAIRS,
+} = SPECIAL_COMBINATION_TYPE;
+
+const {
+    SINGLE,
+    PAIR,
+    THREE,
+    FOUR,
+    STRAIGHT,
+    CONSECUTIVE_PAIRS,
+} = COMBINATION_TYPE;
 
 export default class CardHelper {
     static isMoving(card) {
@@ -16,20 +36,26 @@ export default class CardHelper {
 
     // sắp xếp bài
     static sort(listCards, sortType = SORT_TYPE.DEFAULT, desc = false) {
-        if (sortType === SORT_TYPE.DEFAULT)
-            return listCards.sort((c1, c2) => CardHelper.compare(c1, c2));
+        let temp = [...listCards];
 
-        if (sortType === SORT_TYPE.BY_VALUE)
-            return listCards.sort(
-                (c1, c2) => VALUES.indexOf(c2.value) - VALUES.indexOf(c1.value)
-            );
+        switch (sortType) {
+            case SORT_TYPE.DEFAULT:
+                temp.sort((c1, c2) => CardHelper.compare(c1, c2));
+                break;
+            case SORT_TYPE.BY_VALUE:
+                temp.sort(
+                    (c1, c2) =>
+                        VALUES.indexOf(c2.value) - VALUES.indexOf(c1.value)
+                );
+                break;
+            case SORT_TYPE.BY_SUIT:
+                temp.sort(
+                    (c1, c2) => SUITS.indexOf(c2.suit) - SUITS.indexOf(c1.suit)
+                );
+                break;
+        }
 
-        if (sortType === SORT_TYPE.BY_SUIT)
-            return listCards.sort(
-                (c1, c2) => SUITS.indexOf(c2.suit) - SUITS.indexOf(c1.suit)
-            );
-
-        return desc ? listCards.reverse() : listCards;
+        return desc ? temp.reverse() : temp;
     }
 
     // so sánh 2 lá bài
@@ -58,17 +84,25 @@ export default class CardHelper {
         let type1 = CardHelper.getCombinationType(cards1);
         let type2 = CardHelper.getCombinationType(cards2);
 
-        // same type
+        // --- normal compare / same type ---
         if (type1 === type2) {
             let biggest1 = CardHelper.sort(cards1, null, true)[0];
             let biggest2 = CardHelper.sort(cards2, null, true)[0];
 
+            console.log(biggest1.value, biggest1.suit,biggest2.value, biggest2.suit)
+
             return CardHelper.compare(biggest1, biggest2);
         }
 
-        // TODO: special compare
-        // tứ quý - heo
-        // 3 đôi thông - heo
+        // --- special compare ---
+        for (let key in COMPARE_TEMPLATE) {
+            for (let i of COMPARE_TEMPLATE[key]) {
+                if (type1 == key && type2 == i) return 1;
+                if (type2 == key && type1 == i) return -1;
+            }
+        }
+
+        return 0;
     }
 
     // kiểm tra sự kết hợp bài có hợp lệ hay không
@@ -80,6 +114,16 @@ export default class CardHelper {
     static getCombinationType(cards) {
         if (cards.length == 0) return null;
 
+        let normal = CardHelper.getNormalCombinationType(cards);
+        if (normal) return normal;
+
+        let special = CardHelper.getSpecialCombinationType(cards);
+        if (special) return special;
+
+        return null;
+    }
+
+    static getNormalCombinationType(cards) {
         for (let type in COMBINATION_TYPE) {
             if (CardHelper.isCombinationType(cards, type)) {
                 return type;
@@ -89,16 +133,55 @@ export default class CardHelper {
         return null;
     }
 
+    static getSpecialCombinationType(cards) {
+        for (let type in SPECIAL_COMBINATION_TYPE) {
+            if (CardHelper.isSpecialCombination(cards, type)) {
+                return type;
+            }
+        }
+
+        return null;
+    }
+
+    static isSpecialCombination(cards, special_type) {
+        let type = CardHelper.getNormalCombinationType(cards);
+
+        // 1 heo
+        if (special_type == TWO) return type == SINGLE && cards[0].value == 2;
+
+        // 2 heo
+        if (special_type == DOUBLE_TWO)
+            return type == PAIR && cards[0].value == 2;
+
+        // 3 heo
+        if (special_type == TRIPLE_TWO)
+            return type == THREE && cards[0].value == 2;
+
+        // 4 heo
+        if (special_type == QUAD_TWO)
+            return type == FOUR && cards[0].value == 2;
+
+        // 3 đồi thông
+        if (special_type == THREE_PAIRS)
+            return type == CONSECUTIVE_PAIRS && cards.length == 6;
+
+        // 4 đôi thông
+        if (special_type == FOUR_PAIRS)
+            return type == CONSECUTIVE_PAIRS && cards.length == 8;
+
+        return false;
+    }
+
     static isCombinationType(cards, type) {
         // single
-        if (type == COMBINATION_TYPE.SINGLE) return cards.length == 1;
+        if (type == SINGLE) return cards.length == 1;
 
         // pair
-        if (type == COMBINATION_TYPE.PAIR)
+        if (type == PAIR)
             return cards.length == 2 && cards[0].value == cards[1].value;
 
         // three
-        if (type == COMBINATION_TYPE.THREE)
+        if (type == THREE)
             return (
                 cards.length == 3 &&
                 cards[0].value == cards[1].value &&
@@ -106,7 +189,7 @@ export default class CardHelper {
             );
 
         // four
-        if (type == COMBINATION_TYPE.FOUR)
+        if (type == FOUR)
             return (
                 cards.length == 4 &&
                 cards[0].value == cards[1].value &&
@@ -115,7 +198,7 @@ export default class CardHelper {
             );
 
         // straight
-        if (type == COMBINATION_TYPE.STRAIGHT) {
+        if (type == STRAIGHT) {
             if (cards.length < 3) return false;
             if (cards.find((c) => c.value == 2)) return false;
 
@@ -134,16 +217,17 @@ export default class CardHelper {
         }
 
         // consecutive pairs
-        if (type == COMBINATION_TYPE.CONSECUTIVE_PAIRS) {
+        if (type == CONSECUTIVE_PAIRS) {
             if (cards.length % 2 !== 0) return false;
 
             let sorted = CardHelper.sort(cards);
-            let odd = sorted.filter((v, i) => i % 2 !== 0);
-            let even = sorted.filter((v, i) => i % 2 === 0);
+            let odd = sorted.filter((c, i) => i % 2 !== 0);
+            let even = sorted.filter((c, i) => i % 2 === 0);
 
             return (
-                CardHelper.isCombinationType(odd, COMBINATION_TYPE.STRAIGHT) &&
-                CardHelper.isCombinationType(even, COMBINATION_TYPE.STRAIGHT)
+                odd[0].value == even[0].value &&
+                CardHelper.isCombinationType(odd, STRAIGHT) &&
+                CardHelper.isCombinationType(even, STRAIGHT)
             );
         }
 

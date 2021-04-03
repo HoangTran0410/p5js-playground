@@ -60,13 +60,14 @@ export default class Player {
         let index = this.selected.indexOf(card);
         index == -1 ? this.selected.push(card) : this.selected.splice(index, 1);
 
+        this.selected = CardHelper.sort(this.selected);
         this.updateValidSelected();
 
         return index == -1;
     }
 
     selectCards(cards) {
-        this.selected = cards;
+        this.selected = CardHelper.sort(cards);
         this.updateValidSelected();
     }
 
