@@ -242,7 +242,7 @@ export default class Board {
         if (side in SIDE && !this.havePlayer(side)) {
             this.players[side] = new Player(
                 name,
-                CardHelper.getPlayerPosition(side),
+                CardHelper.getSidePosition(side),
                 hidden
             );
 

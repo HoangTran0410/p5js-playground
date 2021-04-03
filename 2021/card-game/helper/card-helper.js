@@ -89,8 +89,6 @@ export default class CardHelper {
             let biggest1 = CardHelper.sort(cards1, null, true)[0];
             let biggest2 = CardHelper.sort(cards2, null, true)[0];
 
-            console.log(biggest1.value, biggest1.suit,biggest2.value, biggest2.suit)
-
             return CardHelper.compare(biggest1, biggest2);
         }
 
@@ -110,7 +108,12 @@ export default class CardHelper {
         return CardHelper.getCombinationType(cards) !== null;
     }
 
-    // xem loại kết hợp
+    // trả về mọi kết hợp có thể có từ những cards truyền vào
+    static getAllValidCombinations(cards) {
+        // TODO improve AI here
+    }
+
+    // trả về loại kết hợp (thường hoặc đặc biệt)
     static getCombinationType(cards) {
         if (cards.length == 0) return null;
 
@@ -123,9 +126,10 @@ export default class CardHelper {
         return null;
     }
 
+    // trả về loại kết hợp thường
     static getNormalCombinationType(cards) {
         for (let type in COMBINATION_TYPE) {
-            if (CardHelper.isCombinationType(cards, type)) {
+            if (CardHelper.isNormalCombinationType(cards, type)) {
                 return type;
             }
         }
@@ -133,6 +137,7 @@ export default class CardHelper {
         return null;
     }
 
+    // trả về loại kết hợp đặc biệt
     static getSpecialCombinationType(cards) {
         for (let type in SPECIAL_COMBINATION_TYPE) {
             if (CardHelper.isSpecialCombination(cards, type)) {
@@ -143,36 +148,16 @@ export default class CardHelper {
         return null;
     }
 
-    static isSpecialCombination(cards, special_type) {
-        let type = CardHelper.getNormalCombinationType(cards);
-
-        // 1 heo
-        if (special_type == TWO) return type == SINGLE && cards[0].value == 2;
-
-        // 2 heo
-        if (special_type == DOUBLE_TWO)
-            return type == PAIR && cards[0].value == 2;
-
-        // 3 heo
-        if (special_type == TRIPLE_TWO)
-            return type == THREE && cards[0].value == 2;
-
-        // 4 heo
-        if (special_type == QUAD_TWO)
-            return type == FOUR && cards[0].value == 2;
-
-        // 3 đồi thông
-        if (special_type == THREE_PAIRS)
-            return type == CONSECUTIVE_PAIRS && cards.length == 6;
-
-        // 4 đôi thông
-        if (special_type == FOUR_PAIRS)
-            return type == CONSECUTIVE_PAIRS && cards.length == 8;
-
-        return false;
+    // kiểm tra loại kết hợp
+    static isCombinationType(cards, type) {
+        return (
+            CardHelper.isNormalCombinationType(cards, type) ||
+            CardHelper.isSpecialCombination(cards, type)
+        );
     }
 
-    static isCombinationType(cards, type) {
+    // kiểm tra loại kết hợp thường
+    static isNormalCombinationType(cards, type) {
         // single
         if (type == SINGLE) return cards.length == 1;
 
@@ -226,15 +211,46 @@ export default class CardHelper {
 
             return (
                 odd[0].value == even[0].value &&
-                CardHelper.isCombinationType(odd, STRAIGHT) &&
-                CardHelper.isCombinationType(even, STRAIGHT)
+                CardHelper.isNormalCombinationType(odd, STRAIGHT) &&
+                CardHelper.isNormalCombinationType(even, STRAIGHT)
             );
         }
 
         return false;
     }
 
-    static getPlayerPosition(side) {
+    // kiểm tra loại kết hợp đặc biệt
+    static isSpecialCombination(cards, special_type) {
+        let type = CardHelper.getNormalCombinationType(cards);
+
+        // 1 heo
+        if (special_type == TWO) return type == SINGLE && cards[0].value == 2;
+
+        // 2 heo
+        if (special_type == DOUBLE_TWO)
+            return type == PAIR && cards[0].value == 2;
+
+        // 3 heo
+        if (special_type == TRIPLE_TWO)
+            return type == THREE && cards[0].value == 2;
+
+        // 4 heo
+        if (special_type == QUAD_TWO)
+            return type == FOUR && cards[0].value == 2;
+
+        // 3 đồi thông
+        if (special_type == THREE_PAIRS)
+            return type == CONSECUTIVE_PAIRS && cards.length == 6;
+
+        // 4 đôi thông
+        if (special_type == FOUR_PAIRS)
+            return type == CONSECUTIVE_PAIRS && cards.length == 8;
+
+        return false;
+    }
+
+    // trả về vị trí (x, y) dựa trên side
+    static getSidePosition(side) {
         switch (side) {
             case SIDE.TOP:
                 return { x: width / 2, y: CARD_HEIGHT / 2 };
@@ -279,6 +295,7 @@ export default class CardHelper {
         pop();
     }
 
+    // tạo graphics cho 1 lá bài
     static generateCardGraphic(suit, value) {
         let w = CARD_WIDTH;
         let h = CARD_HEIGHT;
@@ -308,22 +325,7 @@ export default class CardHelper {
     static hiddenCardGraphics = null;
     static showHiddenCard(x, y, a, t) {
         if (CardHelper.hiddenCardGraphics == null) {
-            let w = CARD_WIDTH;
-            let h = CARD_HEIGHT;
-
-            CardHelper.hiddenCardGraphics = createGraphics(w, h);
-
-            let _ = CardHelper.hiddenCardGraphics; // ref
-
-            _.fill(150);
-            _.stroke(30);
-            _.strokeWeight(2);
-            _.rect(1, 1, w - 2, h - 2, 5);
-
-            _.stroke(175);
-            _.strokeWeight(3);
-            _.line(5, 5, w - 5, h - 5);
-            _.line(w - 5, 5, 5, h - 5);
+            CardHelper.hiddenCardGraphics = CardHelper.generateHiddenCardGraphic();
         }
 
         push();
@@ -342,6 +344,26 @@ export default class CardHelper {
         }
 
         pop();
+    }
+
+    // tạo graphics cho 1 lá bài úp
+    static generateHiddenCardGraphic() {
+        let w = CARD_WIDTH;
+        let h = CARD_HEIGHT;
+
+        let _ = createGraphics(w, h);
+
+        _.fill(150);
+        _.stroke(30);
+        _.strokeWeight(2);
+        _.rect(1, 1, w - 2, h - 2, 5);
+
+        _.stroke(175);
+        _.strokeWeight(3);
+        _.line(5, 5, w - 5, h - 5);
+        _.line(w - 5, 5, 5, h - 5);
+
+        return _;
     }
 
     // tô sáng 1 lá bài
