@@ -46,7 +46,7 @@ export default class Game {
         this.buttons.goBtn
             .visibleIf(
                 () =>
-                    this.board.giveOutFinished && this.board.turn == SIDE.BOTTOM
+                    this.board.giveOutFinished && this.board.curTurn == SIDE.BOTTOM
             )
             .activeIf(() => this.mainPlayer.isValidSelected)
             .onMouseClicked(() => {
@@ -58,7 +58,7 @@ export default class Game {
             .setColour('#dd4252')
             .visibleIf(
                 () =>
-                    this.board.giveOutFinished && this.board.turn == SIDE.BOTTOM
+                    this.board.giveOutFinished && this.board.curTurn == SIDE.BOTTOM
             )
             .onMouseClicked(() => {
                 this.board.pass();

@@ -19,7 +19,15 @@ export default class Player {
     }
 
     show() {
-        if (this.hidden) {
+        if (this.cards.length == 0) {
+            push();
+            translate(this.position.x, this.position.y);
+            fill('yellow');
+            textAlign(CENTER, CENTER);
+            textSize(30);
+            text('Hết bài', 0, 0);
+            pop();
+        } else if (this.hidden) {
             for (let c of this.cards) {
                 if (CardHelper.isMoving(c)) {
                     c.show();

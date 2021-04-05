@@ -34,7 +34,7 @@ export default class Board {
         this.played = [];
         this.lastMove = [];
 
-        this.turn = SIDE.BOTTOM;
+        this.curTurn = SIDE.BOTTOM;
         this.turnCountDown = TURN_TIMEOUT;
         this.giveOutFinished = false;
 
@@ -88,10 +88,10 @@ export default class Board {
             let np = namePos[position];
             let name = this.players[position].name;
 
-            if (this.turn == position)
+            if (this.curTurn == position)
                 name += '\n' + millisToMinutes(this.turnCountDown);
 
-            fill(position === this.turn ? 'yellow' : 'white');
+            fill(position === this.curTurn ? 'yellow' : 'white');
             textAlign(np[0], np[1]);
             text(name, np[2], np[3]);
         }
@@ -178,18 +178,23 @@ export default class Board {
         this.setLastMove(cards);
         this.played.push(...cards);
 
-        if (this.checkWin()) setTimeout(() => this.newGame(), 2000);
-        else this.nextTurn();
+        if (!this.checkWin()) this.nextTurn();
     }
 
     checkWin() {
+        let haveWinner = false;
         for (let side in this.players) {
             if (this.players[side].cards.length == 0) {
-                return true;
+                haveWinner = true;
+                break;
             }
         }
 
-        return false;
+        if (haveWinner) {
+            setTimeout(() => this.newGame(), 2000);
+        }
+
+        return haveWinner;
     }
 
     setLastMove(cards = []) {
@@ -205,7 +210,7 @@ export default class Board {
 
     // lượt tiếp theo
     nextTurn() {
-        let curTurnIndex = TURNS.indexOf(this.turn);
+        let curTurnIndex = TURNS.indexOf(this.curTurn);
         let nextTurn = null;
 
         while (!nextTurn) {
@@ -216,7 +221,7 @@ export default class Board {
             }
         }
 
-        this.turn = nextTurn;
+        this.curTurn = nextTurn;
         this.turnCountDown = TURN_TIMEOUT;
 
         // update valid select
@@ -234,7 +239,7 @@ export default class Board {
     }
 
     getCurrentPlayer() {
-        return this.players[this.turn];
+        return this.players[this.curTurn];
     }
 
     // thêm người chơi
