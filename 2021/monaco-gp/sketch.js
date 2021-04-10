@@ -137,7 +137,6 @@ function draw() {
 
         for (let t of trees) {
             if (t.y > player.pos.y + height * 2) {
-                console.log('tree');
                 t.y = player.pos.y - random(height, height * 2);
                 t.x = random([
                     random(-100, -50),
