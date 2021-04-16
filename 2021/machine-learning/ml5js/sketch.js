@@ -54,17 +54,33 @@ let modes = {
       });
     },
     draw() {
+      const annos = [
+        "leftEyebrowLower",
+        "leftEyebrowUpper",
+        "rightEyebrowLower",
+        "rightEyebrowUpper",
+      ];
+
       // draw ellipses over the detected keypoints
-      for (let i = 0; i < this.predictions.length; i += 1) {
-        const keypoints = this.predictions[i].scaledMesh;
-
-        // Draw facial keypoints.
-        for (let j = 0; j < keypoints.length; j += 1) {
-          const [x, y] = keypoints[j];
-
-          fill(0, 255, 0);
-          ellipse(x, y, 5, 5);
+      for (let pre of this.predictions) {
+        // scaled mesh
+        fill(0, 255, 0);
+        for (let keypoint of pre.scaledMesh) {
+          const [x, y] = keypoint;
+          circle(x, y, 4);
         }
+
+        // eyebrow
+        // stroke(0, 255, 0);
+        // noFill();
+        // for (let anno of annos) {
+        //   beginShape();
+        //   for (let keypoint of pre.annotations[anno]) {
+        //     const [x, y] = keypoint;
+        //     vertex(x, y);
+        //   }
+        //   endShape();
+        // }
       }
     },
   },
