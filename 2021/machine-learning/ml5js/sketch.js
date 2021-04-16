@@ -10,19 +10,20 @@ function setup() {
   video.size(width, height);
   video.hide();
 
-  // let select = createSelect();
-  // for (let key in modes) select.option(modes[key].name, key);
-  // select.changed(() => {
-  //   let key = select.value();
-  //   currentMode = modes[key];
+  let select = createSelect();
+  for (let key in modes) select.option(modes[key].name, key);
+  select.changed(() => {
+    let key = select.value();
 
-  //   if (!currentMode.loaded) {
-  //     currentMode.setup();
-  //   }
-  // });
+    currentMode = modes[key];
 
-  currentMode = modes.facemesh;
-  currentMode.setup();
+    if (!currentMode.loaded) {
+      currentMode.setup();
+    }
+  });
+
+  // currentMode = modes.facemesh;
+  // currentMode.setup();
 }
 
 function draw() {
@@ -45,21 +46,27 @@ let modes = {
     loaded: false,
     model: null,
     predictions: [],
+    isDetecting: false,
     setup() {
-      this.model = ml5.facemesh(video, () => {
+      this.model = ml5.facemesh(() => {
         this.loaded = true;
-      });
-      this.model.on("predict", (results) => {
-        if (results.length) this.predictions = results;
       });
     },
     draw() {
-      const annos = [
-        "leftEyebrowLower",
-        "leftEyebrowUpper",
-        "rightEyebrowLower",
-        "rightEyebrowUpper",
-      ];
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.predict(video, (results) => {
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
+      // const annos = [
+      //   "leftEyebrowLower",
+      //   "leftEyebrowUpper",
+      //   "rightEyebrowLower",
+      //   "rightEyebrowUpper",
+      // ];
 
       // draw ellipses over the detected keypoints
       for (let pre of this.predictions) {
@@ -89,15 +96,21 @@ let modes = {
     loaded: false,
     model: null,
     predictions: [],
+    isDetecting: false,
     setup() {
-      handpose = ml5.handpose(video, () => {
+      this.model = ml5.handpose(() => {
         this.loaded = true;
-      });
-      handpose.on("predict", (results) => {
-        if (results.length) this.predictions = results;
       });
     },
     draw() {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.predict(video, (results) => {
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
       // draw skeletons
       stroke(0, 255, 0);
       for (let pre of this.predictions) {
@@ -131,16 +144,21 @@ let modes = {
     loaded: false,
     model: null,
     predictions: [],
+    isDetecting: false,
     setup() {
-      this.model = ml5.poseNet(video, () => {
+      this.model = ml5.poseNet(() => {
         this.loaded = true;
-      });
-
-      this.model.on("pose", (results) => {
-        if (results.length) this.predictions = results;
       });
     },
     draw() {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.multiPose(video, (results) => {
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
       this.drawKeypoints(this.predictions);
       this.drawSkeleton(this.predictions);
     },
@@ -179,20 +197,24 @@ let modes = {
     loaded: false,
     model: null,
     predictions: [],
+    isDetecting: false,
     setup() {
       this.model = ml5.objectDetector("cocossd", () => {
         this.loaded = true;
-        this.model.detect(video, this.gotDetections.bind(this));
       });
     },
-    gotDetections(error, results) {
-      if (error) {
-        console.error(error);
-      }
-      this.predictions = results;
-      this.model.detect(video, this.gotDetections.bind(this));
-    },
     draw() {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.detect(video, (error, results) => {
+          if (error) {
+            console.error(error);
+          }
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
       for (let obj of this.predictions) {
         stroke(0, 255, 0);
         strokeWeight(4);
@@ -210,29 +232,33 @@ let modes = {
     loaded: false,
     model: null,
     predictions: [],
+    isDetecting: false,
     setup() {
       this.model = ml5.faceApi(
         video,
         {
           withLandmarks: true,
           withDescriptors: false,
+          minConfidence: 0.2,
         },
         () => {
           this.loaded = true;
-          this.model.detect(this.gotResults.bind(this));
         }
       );
     },
-    gotResults(err, result) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      if (result.length) this.predictions = result;
-      this.model.detect(this.gotResults.bind(this));
-    },
     draw() {
-      if (this.predictions && this.predictions.length > 0) {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.detect(video, (error, results) => {
+          if (error) {
+            console.error(error);
+          }
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
+      if (this.predictions.length > 0) {
         this.drawBox(this.predictions);
         this.drawLandmarks(this.predictions);
       }
@@ -291,27 +317,30 @@ let modes = {
     name: "Body Pix",
     loaded: false,
     model: null,
-    segmentation: null,
+    predictions: null,
+    isDetecting: false,
     setup() {
-      this.model = ml5.bodyPix(video, () => {
+      this.model = ml5.bodyPix(() => {
         this.loaded = true;
-        this.model.segment(this.gotResults.bind(this));
       });
     },
-    gotResults(error, result) {
-      if (error) {
-        console.log(error);
-        return;
-      }
-      if (result) this.segmentation = result;
-      this.model.segment(this.gotResults.bind(this));
-    },
     draw() {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.segment(video, (error, results) => {
+          if (error) {
+            console.error(error);
+          }
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
       fill(30, 200);
       rect(0, 0, width, height);
 
-      if (this.segmentation) {
-        image(this.segmentation.backgroundMask, 0, 0, width, height);
+      if (this.predictions) {
+        image(this.predictions.backgroundMask, 0, 0, width, height);
       }
     },
   },
@@ -319,27 +348,30 @@ let modes = {
     name: "Unet",
     loaded: false,
     model: null,
-    segmentation: null,
+    predictions: null,
+    isDetecting: false,
     setup() {
       this.model = ml5.uNet("face", () => {
         this.loaded = true;
       });
-      this.model.segment(video, this.gotResult.bind(this));
-    },
-    gotResult(error, result) {
-      if (error) {
-        console.error(error);
-        return;
-      }
-      this.segmentation = result;
-      this.model.segment(video, this.gotResult.bind(this));
     },
     draw() {
+      if (this.loaded && !this.isDetecting) {
+        this.isDetecting = true;
+        this.model.segment(video, (error, results) => {
+          if (error) {
+            console.error(error);
+          }
+          this.predictions = results;
+          this.isDetecting = false;
+        });
+      }
+
       fill(30, 200);
       rect(0, 0, width, height);
 
-      if (this.segmentation) {
-        image(this.segmentation.backgroundMask, 0, 0, width, height);
+      if (this.predictions) {
+        image(this.predictions.backgroundMask, 0, 0, width, height);
       }
     },
   },
