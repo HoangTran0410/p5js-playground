@@ -7,3 +7,7 @@ JUST BUBBLES SIMULATION.
 Original repo: GameWithQuadTree (*DELETED*)
 + Total commits: 9
 + Last commit: 12-08-2019
+
+## Screenshots
+
+![screenshot](./1.png)

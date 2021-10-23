@@ -7,3 +7,7 @@ sorting simulation
 Original repo: Sort-Simulate (*DELETED*)
 + Total commits: 10
 + Last commit: 01-10-2018
+
+## Screenshots
+
+![screenshot](./1.png)

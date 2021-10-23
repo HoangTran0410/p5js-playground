@@ -8,6 +8,10 @@ Original repo: EasyDev (*DELETED*)
 + Total commits: 48
 + Last commit: 14-03-2020
 
+## Screenshots
+
+![screenshot](./1.png)
+
 ## License
 
 [MIT](LICENSE)

@@ -11,3 +11,7 @@ L-System simulation in p5js
 Original repo: L-system-dat.gui (*DELETED*)
 + Total commits: 5
 + Last commit: 17-03-2018
+
+## Screenshots
+
+![screenshot](./1.png)

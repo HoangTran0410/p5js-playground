@@ -7,3 +7,7 @@ mandelbrot-set and julia-set simulation in p5js
 Original repo: MandelBrot-Julia-Sets (*DELETED*)
 + Total commits: 2
 + Last commit: 19-07-2018
+
+## Screenshots
+
+![screenshot](./1.png)

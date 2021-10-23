@@ -162,7 +162,7 @@ function drawSet(detailSet) {
 function setup() {
 	createCanvas(600, 600);
 	background(51);
-	drawSet(5);
+	drawSet(1);
 }
 
 function draw() {
@@ -175,7 +175,7 @@ function keyPressed() {
 	switch (keyCode) {
 
 		case 32: MandelMode = !MandelMode;
-					drawSet(10);
+					drawSet(5);
 			break;
 	}
 }
@@ -184,7 +184,7 @@ function mouseWheel(event) {
 	if (event.delta > 0)
 		range += range / 2.5;
 	else range -= range / 5;
-	drawSet(10);
+	drawSet(5);
 }
 
 function mousePressed() {
@@ -195,7 +195,7 @@ function mousePressed() {
 function mouseDragged() {
 	moveX += (prePosX - mouseX) * (range / width * 1.5);
 	moveY += (prePosY - mouseY) * (range / height * 1.5);
-	drawSet(10);
+	drawSet(5);
 	prePosX = mouseX;
 	prePosY = mouseY;
 }

@@ -7,3 +7,7 @@ snake game. is't it?
 Original repo: Snake2D (*DELETED*)
 + Total commits: 2
 + Last commit: 08-11-2018
+
+## Screenshots
+
+![screenshot](./1.png)

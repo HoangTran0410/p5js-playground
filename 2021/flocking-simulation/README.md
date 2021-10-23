@@ -9,3 +9,14 @@ https://www.youtube.com/watch?v=mhjuuHl6qHM
 [Demo 3D](https://hoangtran0410.github.io/p5js-playground/2021/flocking-simulation/3D/)
 
 Created: 31-03-2021
+
+
+## Screenshots
+
+2D
+
+![screenshot](./2D/1.png)
+
+3D
+
+![screenshot](./3D/1.png)

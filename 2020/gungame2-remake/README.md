@@ -7,3 +7,8 @@ GunGame ver 2.5 :) But not finished. Just for fun.
 Original repo: GunGame2_Remake (*DELETED*)
 + Total commits: 42
 + Last commit: 02-04-2020
+
+
+## Screenshots
+
+![screenshot](./1.png)

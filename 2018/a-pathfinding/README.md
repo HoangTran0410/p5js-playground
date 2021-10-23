@@ -7,3 +7,7 @@ A* path finding algorithm simulate in p5js.
 Original repo: A-Pathfinding-Algorithm (*DELETED*)
 + Total commits: 5
 + Last commit: 20-07-2018
+
+## Screenshots
+
+![screenshot](./1.png)

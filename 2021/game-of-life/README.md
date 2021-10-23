@@ -5,3 +5,8 @@
 Original repo: Conway's Game Of Life (*DELETED*)
 + Total commits: 9
 + Last commit: 01-01-2021
+
+
+## Screenshots
+
+![screenshot](./1.png)

@@ -7,3 +7,9 @@ Paint webapp created with p5js
 Original repo: Paint-P5 (*DELETED*)
 + Total commits: 7
 + Last commit: 16-04-2019
+
+## Screenshots
+
+![screenshot](./ScreenShots/1.png)
+![screenshot](./ScreenShots/love.PNG)
+![screenshot](./ScreenShots/nicework.jpg)

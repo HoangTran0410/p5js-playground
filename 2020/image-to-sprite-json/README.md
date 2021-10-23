@@ -8,3 +8,8 @@ Not Finished
 Original repo: ImageToSpriteJson (*DELETED*)
 + Total commits: 5
 + Last commit: 13-01-2020
+
+
+## Screenshots
+
+![screenshot](./1.png)

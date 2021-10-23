@@ -7,3 +7,7 @@ writing points in p5js
 Original repo: Write-Points (*DELETED*)
 + Total commits: 3
 + Last commit: 03-08-2018
+
+## Screenshots
+
+![screenshot](./1.png)

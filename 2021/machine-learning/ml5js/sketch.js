@@ -14,16 +14,11 @@ function setup() {
   for (let key in modes) select.option(modes[key].name, key);
   select.changed(() => {
     let key = select.value();
-
     currentMode = modes[key];
-
     if (!currentMode.loaded) {
       currentMode.setup();
     }
   });
-
-  // currentMode = modes.facemesh;
-  // currentMode.setup();
 }
 
 function draw() {
@@ -113,17 +108,21 @@ let modes = {
 
       // draw skeletons
       stroke(0, 255, 0);
+      fill(0, 255, 0);
+      for (let pre of this.predictions) {
+        for (let p of pre.landmarks) {
+          ellipse(p[0], p[1], 10, 10);
+        }
+      }
+
+      noFill();
       for (let pre of this.predictions) {
         for (let key in pre.annotations) {
           let anno = pre.annotations[key];
-
-          fill(0, 255, 0);
           beginShape();
           for (let p of anno) {
-            ellipse(p[0], p[1], 10, 10);
             vertex(p[0], p[1]);
           }
-          noFill();
           endShape();
         }
       }

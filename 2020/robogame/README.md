@@ -7,3 +7,10 @@ Robo - a MobileStyle game
 Original repo: RoboGame (*DELETED*)
 + Total commits: 27
 + Last commit: 29-02-2020
+
+
+## Screenshots
+
+![screenshot](./1.png)
+
+![screenshot](./2.png)

@@ -11,3 +11,7 @@ Original repo: 2D-Game (*DELETED*)
 
 
 **VERSION 2 IS READY** [Link](https://github.com/HoangTran0410/GunGame2)
+
+## Screenshots
+
+![screenshot](./1.png)
