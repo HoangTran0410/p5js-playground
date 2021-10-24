@@ -14,7 +14,7 @@ function resetMaze() {
   // maze.makePath(readPathStr(PATH_STR.C));
   // maze.makePathFromText("ab", 1);
   maze.generateMaze_DFS({
-    sleepTime: 10,
+    sleepTime: 50,
   });
 }
 
