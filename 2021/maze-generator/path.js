@@ -1,4 +1,4 @@
-export const PATH = {
+export const PATH_STR = {
   A: "6u1r1u1r1u1r1d1r1d1r3d4l1d4r3d",
 };
 
@@ -9,18 +9,18 @@ export const DIR = {
   RIGHT: "r",
 };
 
-export function readPath(path) {
+export function readPathStr(pathStr) {
   let result = [];
 
-  for (let i = 0; i < path.length; i += 2) {
-    let count = Number.parseInt(path[i]);
+  for (let i = 0; i < pathStr.length; i += 2) {
+    let count = Number.parseInt(pathStr[i]);
 
     for (let c = 0; c < count; c++) {
-      result.push(path[i + 1]);
+      result.push(pathStr[i + 1]);
     }
   }
 
   return result;
 }
 
-console.log(readPath(PATH.A));
+console.log(readPathStr(PATH_STR.A));

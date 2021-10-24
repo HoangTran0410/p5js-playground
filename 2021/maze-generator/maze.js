@@ -1,6 +1,6 @@
 import Cell from "./cell.js";
 import { sleep } from "./utils.js";
-import { readPath } from "./path.js";
+import { readPathStr } from "./path.js";
 
 export default class Maze {
   constructor({
@@ -36,7 +36,7 @@ export default class Maze {
     return grid;
   }
 
-  async generateMaze() {
+  async generateMaze_DFS(sleepTime = 0) {
     let currentCell = this.startCell;
     let stack = [currentCell];
 
@@ -44,7 +44,7 @@ export default class Maze {
       currentCell.visited = true;
       currentCell.isHightlight = false;
 
-      var next = this.checkNeighbors(currentCell);
+      var next = this.getRandomNeighbor(currentCell);
 
       if (next) {
         next.visited = true;
@@ -58,9 +58,11 @@ export default class Maze {
 
       currentCell.isHightlight = true;
 
-      await sleep(50);
+      if (sleepTime) await sleep(sleepTime);
     }
   }
+
+  async makePath(path) {}
 
   removeWalls(cellA, cellB) {
     var dx = cellA.col - cellB.col;
@@ -82,7 +84,7 @@ export default class Maze {
     }
   }
 
-  checkNeighbors(cell) {
+  getRandomNeighbor(cell) {
     let neighbors = [];
 
     let x = cell.col;
@@ -107,8 +109,8 @@ export default class Maze {
     }
 
     if (neighbors.length > 0) {
-      var selectedNeighbor = floor(random(0, neighbors.length));
-      return neighbors[selectedNeighbor];
+      var randomIndex = floor(random(0, neighbors.length));
+      return neighbors[randomIndex];
     } else {
       return null;
     }
@@ -118,5 +120,8 @@ export default class Maze {
     for (let cell of this.grid) {
       cell.draw();
     }
+
+    this.startCell.draw("yellow");
+    this.finishCell.draw("yellow");
   }
 }

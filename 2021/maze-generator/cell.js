@@ -16,7 +16,7 @@ export default class Cell {
     };
   }
 
-  draw() {
+  draw(customColor) {
     let x = this.col * this.size;
     let y = this.row * this.size;
 
@@ -25,8 +25,10 @@ export default class Cell {
     let botLeft = { x: x, y: y + this.size };
     let botRight = { x: x + this.size, y: y + this.size };
 
-    stroke(255);
+    noFill();
+    stroke(200);
     strokeWeight(1);
+    strokeCap(SQUARE);
     if (this.walls.top) line(topLeft.x, topLeft.y, topRight.x, topRight.y);
     if (this.walls.bottom) line(botLeft.x, botLeft.y, botRight.x, botRight.y);
     if (this.walls.left) line(topLeft.x, topLeft.y, botLeft.x, botLeft.y);
@@ -34,10 +36,14 @@ export default class Cell {
 
     if (this.visited || this.isHightlight || this.isDone) {
       fill(this.isDone ? 50 : this.isHightlight ? "red" : "purple");
-      stroke(0, 0, 0, 0);
+      noStroke();
       rect(x, y, this.size, this.size);
-    } else {
-      noFill();
+    }
+
+    if (customColor) {
+      fill(customColor);
+      noStroke();
+      rect(x, y, this.size, this.size);
     }
   }
 }
