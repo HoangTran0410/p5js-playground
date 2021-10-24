@@ -1,6 +1,6 @@
 import Cell from "./cell.js";
 import { sleep } from "./utils.js";
-import { readPathStr } from "./path.js";
+import { DIR, PATH_STR, readPathStr } from "./path.js";
 
 export default class Maze {
   constructor({
@@ -36,15 +36,19 @@ export default class Maze {
     return grid;
   }
 
-  async generateMaze_DFS(sleepTime = 0) {
-    let currentCell = this.startCell;
+  async generateMaze_DFS({
+    startCell = this.startCell,
+    finishCell = this.finishCell,
+    sleepTime = 0,
+  }) {
+    let currentCell = startCell;
     let stack = [currentCell];
 
     while (stack.length > 0) {
       currentCell.visited = true;
       currentCell.isHightlight = false;
 
-      var next = this.getRandomNeighbor(currentCell);
+      var next = this.getRandomNeighborNotVisited(currentCell);
 
       if (next) {
         next.visited = true;
@@ -62,7 +66,47 @@ export default class Maze {
     }
   }
 
-  async makePath(path) {}
+  async makePath(path, sleepTime) {
+    let currentCell = this.grid[this.index(9, 1)];
+    for (let dir of path) {
+      let nextCell;
+      let neighbors = this.getNeighbors(currentCell);
+
+      if (dir == DIR.UP) {
+        nextCell = neighbors.top;
+      } else if (dir == DIR.DOWN) {
+        nextCell = neighbors.bottom;
+      } else if (dir == DIR.LEFT) {
+        nextCell = neighbors.left;
+      } else if (dir == DIR.RIGHT) {
+        nextCell = neighbors.right;
+      }
+
+      this.removeWalls(currentCell, nextCell);
+      currentCell.visited = true;
+      currentCell.isDone = true;
+      currentCell = nextCell;
+
+      if (sleepTime) await sleep(sleepTime);
+    }
+
+    // await this.generateMaze_DFS({ startCell: currentCell, sleepTime: 1 });
+    // await this.generateMaze_DFS({
+    //   startCell: this.startCell,
+    //   finishCell: this.grid[this.index(9, 1)],
+    //   sleepTime: 1,
+    // });
+  }
+
+  async makePathFromText(text, sleepTime) {
+    let fullPath = [];
+    for (let c of text.toUpperCase()) {
+      fullPath.push(...readPathStr(PATH_STR[c]));
+      fullPath.push(...readPathStr(PATH_STR[" "]));
+    }
+
+    this.makePath(fullPath, sleepTime);
+  }
 
   removeWalls(cellA, cellB) {
     var dx = cellA.col - cellB.col;
@@ -84,36 +128,30 @@ export default class Maze {
     }
   }
 
-  getRandomNeighbor(cell) {
-    let neighbors = [];
+  getRandomNeighborNotVisited(cell) {
+    let neighbors = this.getNeighbors(cell);
+    let neighborsArray = Object.values(neighbors).filter(
+      (n) => n && !n.visited
+    );
 
-    let x = cell.col;
-    let y = cell.row;
-
-    let top = this.grid[this.index(y - 1, x)];
-    let right = this.grid[this.index(y, x + 1)];
-    let bottom = this.grid[this.index(y + 1, x)];
-    let left = this.grid[this.index(y, x - 1)];
-
-    if (top && !top.visited) {
-      neighbors.push(top);
-    }
-    if (right && !right.visited) {
-      neighbors.push(right);
-    }
-    if (bottom && !bottom.visited) {
-      neighbors.push(bottom);
-    }
-    if (left && !left.visited) {
-      neighbors.push(left);
-    }
-
-    if (neighbors.length > 0) {
-      var randomIndex = floor(random(0, neighbors.length));
-      return neighbors[randomIndex];
+    if (neighborsArray.length > 0) {
+      var randomIndex = floor(random(0, neighborsArray.length));
+      return neighborsArray[randomIndex];
     } else {
       return null;
     }
+  }
+
+  getNeighbors(cell) {
+    let x = cell.col;
+    let y = cell.row;
+
+    return {
+      top: this.grid[this.index(y - 1, x)],
+      right: this.grid[this.index(y, x + 1)],
+      bottom: this.grid[this.index(y + 1, x)],
+      left: this.grid[this.index(y, x - 1)],
+    };
   }
 
   draw() {
