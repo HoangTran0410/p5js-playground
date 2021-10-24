@@ -42,8 +42,7 @@ export default class Cell {
 
     if (customColor) {
       fill(customColor);
-      noStroke();
-      rect(x, y, this.size, this.size);
+      circle(x + this.size / 2, y + this.size / 2, this.size * 0.75);
     }
   }
 }
