@@ -9,12 +9,10 @@ let player,
 function nextLevel() {}
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(600, 600);
   textAlign(CENTER, CENTER);
-  textFont("Consolas");
-  textSize(30);
   rectMode(CENTER);
-  noCursor();
+  // noCursor();
 
   strokeWeight(7);
   stroke("#3A322C");
@@ -23,7 +21,7 @@ function setup() {
   player = new Player(100, 100);
   gameObject.push(player);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     let d = new Dummy(width / 2, height / 2);
     dummies.push(d);
     gameObject.push(d);
@@ -43,7 +41,7 @@ function draw() {
 
   player.control();
   player.lookAt(mouseX, mouseY);
-  dummies.forEach((d) => d.lookAt(mouseX, mouseY));
+  dummies.forEach((d) => d.lookAt(player.pos.x, player.pos.y));
   if (mouseIsPressed) {
     player.attack();
     dummies.forEach((d) => d.attack());
@@ -65,6 +63,10 @@ function draw() {
   fill(50);
   stroke(50);
   strokeWeight(2);
+  textSize(30);
   text(score + "/" + levelMaxScore, width / 2, 20);
+
+  textSize(20);
+  text(~~frameRate(), 10, 10);
   pop();
 }

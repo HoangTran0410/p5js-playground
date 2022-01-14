@@ -6,6 +6,8 @@ class Dummy extends Player {
   control() {}
 
   update() {
+    super.update();
+
     // move to destination
     let speed = 4;
     if (
@@ -17,27 +19,7 @@ class Dummy extends Player {
     }
 
     // restore health
-    if (this.health < 100) this.health += 0.2;
-
-    // collide bullets
-    for (let o of gameObject) {
-      if (o instanceof Bullet) {
-        let distance = p5.Vector.dist(this.pos, o.pos);
-        if (distance < this.size / 2) {
-          o.isDestroy = true;
-
-          this.pos.add(o.vel);
-          this.health -= 5;
-          this.destination = createVector(random(width), random(height));
-
-          gameObject.push(new Spark(o.pos.x, o.pos.y, 0, 4, 100));
-
-          if (this.health < 0) {
-            this.die();
-          }
-        }
-      }
-    }
+    if (this.health < 100) this.health += 0.1;
   }
 
   die() {

@@ -16,6 +16,7 @@ class Player {
     this.size = size;
 
     this.health = 100;
+    this.attackDelay = random(500, 1000);
 
     this.handSize = createVector(size / 2.8, size / 1.5);
     this.handOffset = {
@@ -33,7 +34,10 @@ class Player {
       .heading();
   }
 
-  update() {}
+  update() {
+    this.collideBullets();
+    this.collideEdges();
+  }
 
   render() {
     push();
@@ -170,5 +174,36 @@ class Player {
     if (keyIsDown(83)) {
       this.pos.y += speed;
     }
+  }
+
+  collideEdges() {
+    this.pos.x = constrain(this.pos.x, 0, width);
+    this.pos.y = constrain(this.pos.y, 0, height);
+  }
+
+  collideBullets() {
+    for (let b of gameObject) {
+      if (b instanceof Bullet) {
+        let distance = p5.Vector.dist(this.pos, b.pos);
+        if (distance < this.size / 2) {
+          b.isDestroy = true;
+
+          this.pos.add(b.vel);
+          this.health -= 5;
+          this.destination = createVector(random(width), random(height));
+
+          gameObject.push(new Spark(b.pos.x, b.pos.y, 0, 4, 100));
+
+          if (this.health < 0) {
+            this.die();
+          }
+        }
+      }
+    }
+  }
+
+  die() {
+    this.health = 100;
+    score--;
   }
 }
