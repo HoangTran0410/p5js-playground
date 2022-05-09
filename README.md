@@ -36,3 +36,6 @@ Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các b
 5. [Card Game](./2021/card-game/) (*3*)
 6. [Flock Simulation](./2021/flocking-simulation/) (*3*)
 7. [Maze Generator](./2021/maze-generator/) (*10*)
+
+### 2022
+1. [Sort simulator 2](./2022/sort-simulator-2/) (*5*)
