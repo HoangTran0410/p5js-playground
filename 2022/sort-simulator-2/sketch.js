@@ -8,9 +8,9 @@ function setup() {
   createCanvas(min(windowWidth, 800), 500);
   colorMode(HSB, 100);
 
-  for (let i = 0; i < 50; i++) arr.push(~~random(100));
+  for (let i = 0; i < ~~(width / 10); i++) arr.push(~~random(100));
 
-  delaySlider = createSlider(0, 250, 10, 5);
+  delaySlider = createSlider(0, 100, 10, 2);
 
   createButton("Shuffle").mouseClicked(() => {
     shuffleArray(arr);
