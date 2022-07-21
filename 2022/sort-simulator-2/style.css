@@ -24,8 +24,39 @@ button {
     font-family: 'Courier New', Courier, monospace;
     font-size: 1.2em;
     color: #ddd;
+    border: none;
+
+    transition: all 0.2s ease-in-out;
 }
 
 button:hover {
     background-color: #444;
+}
+
+button.loading {
+    cursor: default;
+    background-color: #ddd;
+    color: black;
+}
+
+button.loading::after {
+    content: '';
+    /* animation: spin 2s linear infinite; */
+    animation: changeLetter 2s linear infinite alternate;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes changeLetter {
+    0% {
+        content: ' 🤨';
+    }
+    50% {
+        content: ' 🤯';
+    }
+    100% {
+        content: ' 🤔';
+    }
 }

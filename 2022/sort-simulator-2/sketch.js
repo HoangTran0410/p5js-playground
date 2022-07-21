@@ -3,6 +3,17 @@ let highlightIndexes = [];
 let sleepTime = 10;
 
 let delaySlider;
+let isSorting = false;
+
+async function runSort(sortFunc, array, button) {
+  if (!isSorting) {
+    button.classList.add("loading");
+    isSorting = true;
+    await sortFunc(array);
+    isSorting = false;
+    button.classList.remove("loading");
+  }
+}
 
 function setup() {
   createCanvas(min(windowWidth, 800), 500);
@@ -12,36 +23,36 @@ function setup() {
 
   delaySlider = createSlider(0, 100, 10, 2);
 
-  createButton("Shuffle").mouseClicked(() => {
-    shuffleArray(arr);
+  createButton("Shuffle").mouseClicked((e) => {
+    runSort(shuffleArray, arr, e.target);
   });
-  createButton("Bubble Sort").mouseClicked(() => {
-    bubbleSort(arr);
+  createButton("Bubble Sort").mouseClicked((e) => {
+    runSort(bubbleSort, arr, e.target);
   });
-  createButton("Selection Sort").mouseClicked(() => {
-    selectionSort(arr);
+  createButton("Selection Sort").mouseClicked((e) => {
+    runSort(selectionSort, arr, e.target);
   });
-  createButton("Merge Sort").mouseClicked(() => {
+  createButton("Merge Sort").mouseClicked((e) => {
     // alert("Not implemented yet");
-    mergeSort(arr);
+    runSort(mergeSort, arr, e.target);
   });
-  createButton("Insertion Sort").mouseClicked(() => {
-    insertionSort(arr);
+  createButton("Insertion Sort").mouseClicked((e) => {
+    runSort(insertionSort, arr, e.target);
   });
-  createButton("Binary Insertion Sort").mouseClicked(() => {
-    binaryInsertionSort(arr);
+  createButton("Binary Insertion Sort").mouseClicked((e) => {
+    runSort(binaryInsertionSort, arr, e.target);
   });
-  createButton("Shaker Sort").mouseClicked(() => {
-    shakerSort(arr);
+  createButton("Shaker Sort").mouseClicked((e) => {
+    runSort(shakerSort, arr, e.target);
   });
-  createButton("Shell Sort").mouseClicked(() => {
-    shellSort(arr);
+  createButton("Shell Sort").mouseClicked((e) => {
+    runSort(shellSort, arr, e.target);
   });
-  createButton("Quick Sort").mouseClicked(() => {
-    quickSort(arr);
+  createButton("Quick Sort").mouseClicked((e) => {
+    runSort(quickSort, arr, e.target);
   });
-  createButton("Radix Sort").mouseClicked(() => {
-    radixSort(arr);
+  createButton("Radix Sort").mouseClicked((e) => {
+    runSort(radixSort, arr, e.target);
   });
 }
 
