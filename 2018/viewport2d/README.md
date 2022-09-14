@@ -2,7 +2,7 @@
 
 Viewport (Camera follow player) in p5js
 
-[Demo](https://hoangtran0410.github.io/p5js-playground/2018/viewport/)
+[Demo](https://hoangtran0410.github.io/p5js-playground/2018/viewport2d/)
 
 Original repo: viewport-2D (*DELETED*)
 + Total commits: 30
