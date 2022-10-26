@@ -1,5 +1,7 @@
 # p5js-playground
 
+Donate? Muốn hỗ trợ mình 1 ly cafe <3 [Donate here](https://github.com/HoangTran0410/HoangTran0410/blob/main/DONATE.md)
+
 Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các bạn chạy thử nhé :)
 
 ## Top Projects
