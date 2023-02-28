@@ -81,6 +81,12 @@ export function draw() {
   if (keyIsDown(68)) {
     cam.turn(-0.05);
   }
+  if (keyIsDown(87)) {
+    cam.zoom(0.02);
+  }
+  if (keyIsDown(83)) {
+    cam.zoom(-0.02);
+  }
 }
 
 export function mouseWheel(event) {
