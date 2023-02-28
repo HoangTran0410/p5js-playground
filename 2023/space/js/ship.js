@@ -6,18 +6,16 @@ export default class Ship {
     this.radius = 20;
     this.heading = -PI / 2;
     this.boosting = 0;
-    this.rotation = 0;
-
     this.maxSpeed = 5;
+
+    this.renderIgnoreScale = false;
   }
 
   update() {
     // Update velocity, position, and rotation based on acceleration and rotation
     this.velocity.add(this.acceleration);
-    this.velocity.mult(0.99); // Add a bit of friction to slow the ship down over time
+    this.velocity.mult(0.999); // Add a bit of friction to slow the ship down over time
     this.position.add(this.velocity);
-    this.heading += this.rotation;
-    this.rotation *= 0.95;
 
     // Reset acceleration
     this.acceleration.set(0, 0);
@@ -52,30 +50,61 @@ export default class Ship {
   }
 
   turn(angle) {
-    // Apply a rotational force to the ship (based on angle)
-    this.rotation = angle;
+    this.heading += angle;
   }
 
-  show() {
+  show(cam) {
     // Draw the ship as a triangle with the appropriate orientation
     push();
     translate(this.position.x, this.position.y);
     rotate(this.heading + PI / 2);
 
     // Draw ship body
-    fill(0);
-    stroke(255);
-    strokeWeight(2);
-    beginShape();
-    vertex(0, -this.radius);
-    vertex(this.radius / 2, this.radius / 2);
-    vertex(-this.radius / 2, this.radius / 2);
-    endShape(CLOSE);
+    if (this.renderIgnoreScale) {
+      fill(0);
+      stroke(255);
+      strokeWeight(2 / cam.scale);
+
+      beginShape();
+      let r = this.radius / cam.scale;
+      vertex(0, -r);
+      vertex(r / 2, r / 2);
+      vertex(0, r / 4);
+      vertex(-r / 2, r / 2);
+      endShape(CLOSE);
+    } else {
+      fill(0);
+      stroke(255);
+      strokeWeight(2);
+
+      beginShape();
+      let r = this.radius;
+      // render a triangle spaceship with a circle at the back
+      vertex(0, -r);
+      vertex(r / 1.5, r / 2);
+      vertex(-r / 1.5, r / 2);
+      endShape(CLOSE);
+
+      // render a circle at the back of the ship
+      ellipse(0, r / 2, r / 1.5, r / 4);
+    }
 
     // Draw ship exhaust if boosting
-    if (this.boosting) {
-      fill(255, 90, 150);
+    if (!this.renderIgnoreScale && this.boosting) {
       noStroke();
+
+      // bigger triangle first
+      fill(150, 50, 200);
+      triangle(
+        -this.radius / 2,
+        this.radius / 2,
+        0,
+        this.radius / 2 + random(10, 25),
+        this.radius / 2,
+        this.radius / 2
+      );
+
+      fill(255, 90, 150, 200);
       triangle(
         -this.radius / 2,
         this.radius / 2,

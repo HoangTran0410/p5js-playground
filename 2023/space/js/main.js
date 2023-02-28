@@ -19,12 +19,12 @@ export function setup() {
   starField = new StarField(500, cam);
 
   // create 10 planets, not overlapping
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     let x, y, r;
     do {
-      x = random(-width * 3, width * 3);
-      y = random(-height * 3, height * 3);
-      r = random(100, 500);
+      x = random(-3000, 3000);
+      y = random(-3000, 3000);
+      r = random(500, 1000);
     } while (planets.some((p) => p.overlaps(x, y, r * 2)));
     planets.push(new Planet(x, y, r));
   }
@@ -33,15 +33,18 @@ export function setup() {
 export function draw() {
   background(30);
 
-  starField.update();
-  starField.draw();
+  // starField.update();
+  starField.draw(cam);
 
   cam.update();
   cam.beginState();
 
+  let planetToAttach = false;
   for (let planet of planets) {
     let d = p5.Vector.dist(planet.position, ship.position);
-    if (d < planet.radius * 2) {
+
+    if (d < planet.radius + 500) {
+      planetToAttach = planet;
       planet.gravity(ship);
       ship.collide(planet);
     }
@@ -49,12 +52,20 @@ export function draw() {
     planet.update();
     planet.show();
   }
+  if (planetToAttach) {
+    cam.attachToPlanet(planetToAttach);
+    ship.renderIgnoreScale = false;
+  } else {
+    ship.renderIgnoreScale = cam.scale < 0.7;
+    cam.detachFromPlanet();
+  }
 
   ship.update();
-  ship.show();
+  ship.show(cam);
 
   cam.endState();
 
+  // controls
   if (keyIsDown(UP_ARROW)) {
     ship.boost(0.6);
   }
@@ -64,6 +75,16 @@ export function draw() {
   if (keyIsDown(RIGHT_ARROW)) {
     ship.turn(0.05);
   }
+  if (keyIsDown(65)) {
+    cam.turn(0.05);
+  }
+  if (keyIsDown(68)) {
+    cam.turn(-0.05);
+  }
+}
+
+export function mouseWheel(event) {
+  cam.zoom(-event.delta / 500);
 }
 
 export function keyPressed() {}

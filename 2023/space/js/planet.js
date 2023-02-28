@@ -1,3 +1,5 @@
+import { createRadialGradient } from "./utils.js";
+
 const G = 0.5;
 
 export default class Planet {
@@ -5,7 +7,9 @@ export default class Planet {
     this.position = createVector(x, y);
     this.mass = r * 50;
     this.radius = r;
-    this.colour = [random(255), random(255), random(255)];
+
+    // dirt color
+    this.colour = "#202925";
 
     this.clouds = [];
     for (let i = 0; i < random(this.radius / 10); i++) {
@@ -26,9 +30,28 @@ export default class Planet {
   }
 
   show() {
+    let { x, y } = this.position;
+    let r = this.radius;
+
+    // draw atmosphere with fill
+    fill(255);
+    noStroke();
+    createRadialGradient(x, y, 0, r * 3, [
+      { stop: 0, color: "#7266b9" },
+      { stop: 0.5, color: "#7266b955" },
+      { stop: 1, color: "blue" },
+    ]);
+    circle(x, y, r * 3);
+
+    // draw planet
     noStroke();
     fill(this.colour);
-    ellipse(this.position.x, this.position.y, this.radius * 2);
+    ellipse(x, y, r * 2);
+
+    // draw 2 diameters of planet
+    stroke(255, 100);
+    line(x - r, y, x + r, y);
+    line(x, y - r, x, y + r);
 
     for (let cloud of this.clouds) {
       cloud.show();

@@ -5,8 +5,13 @@ export default class Camera {
     isFollow = true,
     followLerp = 0.1,
     scale = 1,
-    scaleTo = 1,
-    scaleLerp = 0.07,
+    scaleTo = 0.1,
+    scaleLerp = 0.09,
+    maxScale = 1,
+    minScale = 0.1,
+    rotate = 0,
+    rotateTo = 0,
+    rotateLepr = 0.08,
     borderSize = 25,
     borderSpeed = 30,
   } = {}) {
@@ -18,13 +23,29 @@ export default class Camera {
     this.scale = scale;
     this.scaleTo = scaleTo;
     this.scaleLerp = scaleLerp;
+    this.maxScale = maxScale;
+    this.minScale = minScale;
+    this.rotate = rotate;
+    this.rotateTo = rotateTo;
+    this.rotateLepr = rotateLepr;
     this.borderSize = borderSize;
     this.borderSpeed = borderSpeed;
   }
 
   update() {
-    // update scale
     this.scale = lerp(this.scale, this.scaleTo, this.scaleLerp);
+    this.rotate = lerp(this.rotate, this.rotateTo, this.rotateLepr);
+
+    if (this.planet) {
+      let dir = p5.Vector.sub(this.planet.position, this.target);
+      this.scaleTo = height / dir.mag();
+
+      // make rotation smooth
+      let angle = -dir.heading() + PI / 2;
+      let diff = angle - this.rotateTo;
+      if (abs(diff) > PI) diff = (diff + TWO_PI) % TWO_PI; // TODO: recheck logic
+      this.rotateTo += diff;
+    }
 
     // follow target
     if (this.isFollow) {
@@ -45,10 +66,22 @@ export default class Camera {
     }
   }
 
+  detachFromPlanet() {
+    if (this.planet) {
+      this.planet = null;
+      this.zoomTo(0.1);
+    }
+  }
+
+  attachToPlanet(planet) {
+    this.planet = planet;
+  }
+
   beginState() {
     push();
     translate(width * 0.5, height * 0.5);
     scale(this.scale);
+    rotate(this.rotate);
     translate(-this.position.x, -this.position.y);
   }
 
@@ -60,6 +93,28 @@ export default class Camera {
     this.target = target;
 
     if (immediately) this.position.set(target.x, target.y);
+  }
+
+  zoom(offset, immediately) {
+    this.scaleTo += offset;
+    this.scaleTo = constrain(this.scaleTo, this.minScale, this.maxScale);
+
+    if (immediately) this.scale = this.scaleTo;
+  }
+
+  zoomTo(scale, immediately) {
+    let offset = scale - this.scaleTo;
+    this.zoom(offset, immediately);
+  }
+
+  turn(offset, immediately) {
+    this.rotateTo += offset;
+    if (immediately) this.rotate = this.rotateTo;
+  }
+
+  turnTo(angle, immediately) {
+    let offset = angle - this.rotateTo;
+    this.turn(offset, immediately);
   }
 
   getViewport() {

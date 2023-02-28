@@ -20,17 +20,23 @@ export default class StarField {
     }
   }
 
-  draw() {
+  draw(cam) {
+    // rotate by the camera's rotation
+    push();
+    translate(width * 0.5, height * 0.5);
+    rotate(cam.rotate);
+    translate(-width * 0.5, -height * 0.5);
     for (const star of this.stars) {
       star.show();
     }
+    pop();
   }
 }
 
 class Star {
   constructor() {
-    this.x = random(0, width);
-    this.y = random(0, height);
+    this.x = random(-width, width * 2);
+    this.y = random(-height, height * 2);
     this.z = random(width);
     this.size = map(this.z, 0, width, 5, 1);
     this.speed = map(this.z, 0, width, 1, 0);
