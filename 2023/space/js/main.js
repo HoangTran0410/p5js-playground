@@ -43,11 +43,9 @@ export function draw() {
   for (let planet of planets) {
     let d = p5.Vector.dist(planet.position, ship.position);
 
-    if (d < planet.radius + 500) {
-      planetToAttach = planet;
-      planet.gravity(ship);
-      ship.collide(planet);
-    }
+    if (d < planet.radius + ship.radius) ship.collide(planet);
+    if (d < planet.radius * 1.5) planetToAttach = planet;
+    if (d < planet.radius * 1.5) planet.gravity(ship);
 
     planet.update();
     planet.show();
