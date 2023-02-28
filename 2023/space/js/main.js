@@ -56,7 +56,7 @@ export function draw() {
     cam.attachToPlanet(planetToAttach);
     ship.renderIgnoreScale = false;
   } else {
-    ship.renderIgnoreScale = cam.scale < 0.7;
+    ship.renderIgnoreScale = cam.scale < 0.25;
     cam.detachFromPlanet();
   }
 
