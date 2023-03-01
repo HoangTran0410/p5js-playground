@@ -10,6 +10,7 @@ let starField,
 
 export function setup() {
   createCanvas(windowWidth, windowHeight);
+  frameRate(60);
 
   ship = new Ship();
 
@@ -65,7 +66,7 @@ export function draw() {
 
   // controls
   if (keyIsDown(UP_ARROW)) {
-    ship.boost(0.6);
+    ship.boost(0.06);
   }
   if (keyIsDown(LEFT_ARROW)) {
     ship.turn(-0.05);

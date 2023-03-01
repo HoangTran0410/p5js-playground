@@ -15,6 +15,7 @@ export default class Ship {
     // Update velocity, position, and rotation based on acceleration and rotation
     this.velocity.add(this.acceleration);
     this.velocity.mult(0.999); // Add a bit of friction to slow the ship down over time
+    this.velocity.limit(this.maxSpeed);
     this.position.add(this.velocity);
 
     // Reset acceleration
@@ -40,8 +41,6 @@ export default class Ship {
 
   boost(value) {
     this.boosting = value > 0;
-
-    if (this.velocity.mag() > this.maxSpeed) return; // Limit the ship's speed
 
     // Apply a forward or backward force to the ship (based on value)
     let force = p5.Vector.fromAngle(this.heading);
