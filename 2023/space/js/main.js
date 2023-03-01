@@ -1,7 +1,7 @@
-import StarField from "./starField.js";
-import Ship from "./ship.js";
-import Camera from "./camera.js";
-import Planet from "./planet.js";
+import StarField from "./gameObjects/StarField.js";
+import Ship from "./gameObjects/Ship.js";
+import Camera from "./gameObjects/Camera.js";
+import Planet from "./gameObjects/Planet.js";
 
 let starField,
   ship,
@@ -13,14 +13,13 @@ export function setup() {
   frameRate(60);
 
   ship = new Ship();
-
   cam = new Camera();
   cam.follow(ship.position);
 
-  starField = new StarField(500, cam);
+  starField = new StarField(200);
 
   // create 10 planets, not overlapping
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 2; i++) {
     let x, y, r;
     do {
       x = random(-3000, 3000);
@@ -35,7 +34,7 @@ export function draw() {
   background(30);
 
   // starField.update();
-  starField.draw(cam);
+  starField.show(cam);
 
   cam.update();
   cam.beginState();

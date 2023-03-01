@@ -1,34 +1,54 @@
 export default class StarField {
-  constructor(numStars, camera) {
-    this.camera = camera;
-    this.lastPos = this.camera.position.copy();
-    this.stars = [];
-    for (let i = 0; i < numStars; i++) {
-      this.stars.push(new Star());
-    }
+  constructor(numStars) {
+    this.numStars = numStars;
+    this.initGraphics();
   }
 
-  update() {
-    let sub = p5.Vector.sub(this.camera.position, this.lastPos);
-    let d = sub.mag();
-    if (d > 0) {
-      this.lastPos = this.camera.position.copy();
+  initGraphics() {
+    // delete old graphic
+    if (this.graphic) this.graphic.remove();
 
-      for (const star of this.stars) {
-        star.move(sub.x, sub.y);
+    // create new graphic
+    let size = Math.sqrt(
+      Math.pow(displayWidth, 2) + Math.pow(displayHeight, 2)
+    );
+    this.graphic = createGraphics(size, size);
+
+    // draw the stars inside circle area
+    for (let i = 0; i < this.numStars; i++) {
+      let x = random(size);
+      let y = random(size);
+      let r = random(1, 3);
+      let twinkle = random() > 0.95;
+
+      this.graphic.fill(255, random(100, 255));
+      this.graphic.noStroke();
+      this.graphic.ellipse(x, y, r, r);
+
+      if (twinkle) {
+        let r2 = r * 2;
+        this.graphic.noFill();
+        this.graphic.stroke(255);
+        this.graphic.line(x - r2, y - r2, x + r2, y + r2);
+        this.graphic.line(x + r2, y - r2, x - r2, y + r2);
       }
     }
   }
 
-  draw(cam) {
+  show(cam) {
     // rotate by the camera's rotation
     push();
     translate(width * 0.5, height * 0.5);
     rotate(cam.rotate);
     translate(-width * 0.5, -height * 0.5);
-    for (const star of this.stars) {
-      star.show();
-    }
+
+    // draw graphic at center of screen
+    image(
+      this.graphic,
+      width * 0.5 - this.graphic.width * 0.5,
+      height * 0.5 - this.graphic.height * 0.5
+    );
+
     pop();
   }
 }

@@ -1,4 +1,4 @@
-import { createRadialGradient } from "./utils.js";
+import { createRadialGradient } from "../utils/utils.js";
 
 const G = 0.5;
 
@@ -17,7 +17,7 @@ export default class Planet {
         this,
         random(30, this.radius / 2),
         random(30, 50),
-        random(-0.005, 0.005)
+        random(0.001) * random([-1, 1])
       );
       this.clouds.push(cloud);
     }
@@ -111,6 +111,6 @@ class Cloud {
       planet.position.y + sin(angle) * (planet.radius + height)
     );
 
-    this.xoff += Math.max(this.speed, 0.001);
+    this.xoff += Math.max(speed, 0.001);
   }
 }
