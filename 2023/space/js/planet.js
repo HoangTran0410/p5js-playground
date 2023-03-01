@@ -12,7 +12,7 @@ export default class Planet {
     this.colour = "#202925";
 
     this.clouds = [];
-    for (let i = 0; i < random(this.radius / 10); i++) {
+    for (let i = 0; i < random(10); i++) {
       let cloud = new Cloud(
         this,
         random(30, this.radius / 2),
