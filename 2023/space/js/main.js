@@ -80,10 +80,10 @@ export function draw() {
     cam.turn(-0.05);
   }
   if (keyIsDown(87)) {
-    cam.zoom(0.02);
+    cam.zoom(cam.scale * 0.02);
   }
   if (keyIsDown(83)) {
-    cam.zoom(-0.02);
+    cam.zoom(-cam.scale * 0.02);
   }
 }
 
