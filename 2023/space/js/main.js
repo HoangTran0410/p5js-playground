@@ -16,7 +16,7 @@ export function setup() {
   cam = new Camera();
   cam.follow(ship.position);
 
-  starField = new StarField(200);
+  starField = new StarField(displayHeight / 2);
 
   // create 10 planets, not overlapping
   for (let i = 0; i < 2; i++) {
