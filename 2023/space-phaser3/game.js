@@ -1,12 +1,11 @@
 var config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  parent: "phaser-example",
+  backgroundColor: "#0072bc",
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 0 },
-      debug: false,
+      debug: true,
     },
   },
   scene: {
@@ -16,59 +15,34 @@ var config = {
   },
 };
 
-var game = new Phaser.Game(config);
+var cursors;
 var player;
 
-function preload() {
-  // Load the image for the player
-  //   this.load.image("ship", "assets/ship.png");
-}
+var game = new Phaser.Game(config);
+
+function preload() {}
 
 function create() {
-  // Add the player as a rectangle
+  cursors = this.input.keyboard.createCursorKeys();
+
   player = this.add.rectangle(400, 300, 50, 50, 0xffffff);
+  this.physics.world.enable(player);
 
-  // Add physics to the player rectangle
-  this.physics.add.existing(player);
-
-  // Set the player's bounce and drag
-  player.body.setBounce(0.2);
-  player.body.setDrag(500);
-
-  // Set the camera to follow the player
-  this.cameras.main.startFollow(player);
-
-  // Set the background color
-  this.cameras.main.setBackgroundColor("#000000");
+  player.body.setCollideWorldBounds(true);
 }
 
 function update() {
-  // Rotate the player left or right
-  if (
-    this.input.keyboard.checkDown(
-      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT),
-      0
-    )
-  ) {
-    player.angle -= 1;
-  } else if (
-    this.input.keyboard.checkDown(
-      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT),
-      0
-    )
-  ) {
-    player.angle += 1;
+  // player.setVelocity(0);
+
+  if (cursors.left.isDown) {
+    player.body.setVelocityX(-160);
+  } else if (cursors.right.isDown) {
+    player.body.setVelocityX(160);
   }
 
-  // Boost the player forward
-  if (
-    this.input.keyboard.checkDown(
-      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
-      0
-    )
-  ) {
-    var angle = player.rotation - Math.PI / 2;
-    player.body.velocity.x += Math.cos(angle) * 10000;
-    player.body.velocity.y += Math.sin(angle) * 10000;
+  if (cursors.up.isDown) {
+    player.body.setVelocityY(-160);
+  } else if (cursors.down.isDown) {
+    player.body.setVelocityY(160);
   }
 }
