@@ -15,7 +15,7 @@ class NeuralNetwork {
 
   //   run the input values through the neural network to calculate the output values
   calculateOutput(inputs) {
-    let outputs = inputs;
+    let outputs = [...inputs];
     for (let layer of this.layers) {
       outputs = layer.calculateOutput(outputs);
     }
