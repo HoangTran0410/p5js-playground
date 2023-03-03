@@ -1,3 +1,5 @@
+// https://www.youtube.com/watch?v=hfMk-kjRv4c
+
 let neuralNetwork;
 
 function setup() {
