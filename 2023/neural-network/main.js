@@ -27,7 +27,7 @@ function draw() {
       let graphY = map(y, 0, height, 1, -1);
 
       // draw the graph
-      let classification = 0; //classify(graphX, graphY);
+      let classification = neuralNetwork.classify([graphX, graphY]);
       if (classification === 0) {
         pixels[index + 0] = 255;
         pixels[index + 1] = 0;
@@ -79,38 +79,36 @@ class Layer {
     layerTitle.style("font-size", "20px");
     layerTitle.style("margin-bottom", "10px");
 
+    // create the weight sliders for each nodein and nodeout
     let weightsDiv = createDiv("Weights");
-    let biasesDiv = createDiv("Biases");
-
     for (let nodeIn = 0; nodeIn < this.numNodesIn; nodeIn++) {
       let weightsList = createDiv();
-      let biasesList = createDiv();
 
       for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
         let weight = random(-1, 1);
-        let bias = random(-1, 1);
-
         this.weights[nodeIn] = this.weights[nodeIn] || [];
         this.weights[nodeIn][nodeOut] = weight;
 
-        this.biases[nodeOut] = bias;
-
         let weightSlider = createSlider(-1, 1, weight, 0.01);
-        let biasSlider = createSlider(-1, 1, bias, 0.01);
-
         weightSlider.input(() => {
           this.weights[nodeIn][nodeOut] = weightSlider.value();
         });
-
-        biasSlider.input(() => {
-          this.biases[nodeOut] = biasSlider.value();
-        });
-
         weightsList.child(weightSlider);
-        biasesList.child(biasSlider);
       }
-
       weightsDiv.child(weightsList);
+    }
+
+    // create the bias slider for each nodeout
+    let biasesDiv = createDiv("Biases");
+    for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
+      let biasesList = createDiv();
+      let bias = random(-1, 1);
+      this.biases[nodeOut] = bias;
+      let biasSlider = createSlider(-1, 1, bias, 0.01);
+      biasSlider.input(() => {
+        this.biases[nodeOut] = biasSlider.value();
+      });
+      biasesList.child(biasSlider);
       biasesDiv.child(biasesList);
     }
 
@@ -121,16 +119,21 @@ class Layer {
 
   // calculate the output of the layer
   calculateOutput(inputs) {
-    let weightedInputs = [];
+    let activations = [];
 
     for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
       let weightedOutput = this.biases[nodeOut];
       for (let nodeIn = 0; nodeIn < this.numNodesIn; nodeIn++) {
         weightedOutput += inputs[nodeIn] * this.weights[nodeIn][nodeOut];
       }
-      weightedInputs[nodeOut] = weightedOutput;
+      activations[nodeOut] = this.activationFunction(weightedOutput);
     }
-    return weightedInputs;
+    return activations;
+  }
+
+  activationFunction(weightedInput) {
+    // return 1 / (1 + Math.exp(-weightedInput));
+    return weightedInput > 0 ? 1 : 0;
   }
 }
 
