@@ -68,12 +68,8 @@ class Layer {
 
     // create the layer title, bold, bigger font, underlined, margin bottom
     let layerTitle = createDiv(
-      "Layer " +
-        this.layerIndex +
-        ": " +
-        this.numNodesIn +
-        " -> " +
-        this.numNodesOut
+      `Layer ${this.layerIndex}: <br/>
+      (in ${this.numNodesIn} -> out ${this.numNodesOut})`
     );
     layerTitle.style("font-weight", "bold");
     layerTitle.style("font-size", "20px");
@@ -132,8 +128,17 @@ class Layer {
   }
 
   activationFunction(weightedInput) {
+    // sigmoid
     // return 1 / (1 + Math.exp(-weightedInput));
-    return weightedInput > 0 ? 1 : 0;
+
+    // hyperbolic tangent
+    return Math.tanh(weightedInput);
+
+    // relu
+    // return weightedInput > 0 ? weightedInput : 0;
+
+    // tanh
+    // return weightedInput > 0 ? 1 : 0;
   }
 }
 
