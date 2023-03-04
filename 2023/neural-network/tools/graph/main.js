@@ -90,10 +90,10 @@ function draw() {
 }
 
 let allFunctions = {
-  step: (x) => (x >= 0 ? 1 : 0),
-  sigmoid: (x) => 1 / (1 + Math.exp(-x)),
-  dsigmoid: (y) => y * (1 - y),
-  hyperbolicTangent: (x) => Math.tanh(x),
-  silu: (x) => x / (1 + Math.exp(-x)),
-  relu: (x) => Math.max(0, x),
+  Step: (x) => (x >= 0 ? 1 : 0),
+  Sigmoid: (x) => 1 / (1 + Math.exp(-x)),
+  Dsigmoid: (y) => y * (1 - y),
+  "Hyperbolic Tangent": (x) => Math.tanh(x),
+  SiLU: (x) => x / (1 + Math.exp(-x)),
+  ReLU: (x) => Math.max(0, x),
 };
