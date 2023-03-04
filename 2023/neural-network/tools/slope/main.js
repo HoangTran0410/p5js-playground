@@ -99,15 +99,36 @@ function draw() {
   }
   endShape();
 
+  // draw the derivative
+  stroke("yellow");
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for (let x = graphSize.x[0]; x <= graphSize.x[1]; x += 0.01) {
+    let y = TheDerivative(x);
+    let px = map(x, graphSize.x[0], graphSize.x[1], 0, width);
+    let py = map(y, graphSize.y[0], graphSize.y[1], height, 0);
+    vertex(px, py);
+  }
+  endShape();
+
   // draw all point of the learning history
-  stroke(0);
-  strokeWeight(1);
-  fill(255);
+  noStroke();
+  fill(0);
   for (let x of learnHistory) {
     let y = TheFunction(x);
     let px = map(x, graphSize.x[0], graphSize.x[1], 0, width);
     let py = map(y, graphSize.y[0], graphSize.y[1], height, 0);
-    ellipse(px, py, 5);
+    ellipse(px, py, 10);
+  }
+
+  // draw the slope at the input value
+  drawSlope(inputValue);
+
+  // draw the slope at the mouse position
+  if (drawSlopeAtMouse) {
+    let mx = map(mouseX, 0, width, graphSize.x[0], graphSize.x[1]);
+    drawSlope(mx);
   }
 
   // draw the current input value
@@ -123,19 +144,14 @@ function draw() {
     0
   );
   ellipse(px, py, 10);
-
-  // draw the slope at the input value
-  drawSlope(inputValue);
-
-  // draw the slope at the mouse position
-  if (drawSlopeAtMouse) {
-    let mx = map(mouseX, 0, width, graphSize.x[0], graphSize.x[1]);
-    drawSlope(mx);
-  }
 }
 
 function TheFunction(x) {
   return 0.2 * pow(x, 4) + 0.1 * pow(x, 3) - pow(x, 2) + 2;
+}
+
+function TheDerivative(x) {
+  return 0.8 * pow(x, 3) + 0.3 * pow(x, 2) - 2 * x;
 }
 
 function learn(learnRate) {
@@ -147,10 +163,12 @@ function learn(learnRate) {
 }
 
 function calculateSlope(x) {
-  let h = 0.00001;
-  let deltaOutput = TheFunction(x + h) - TheFunction(x);
-  let slope = deltaOutput / h;
-  return slope;
+  // let h = 0.00001;
+  // let deltaOutput = TheFunction(x + h) - TheFunction(x);
+  // let slope = deltaOutput / h;
+  // return slope;
+
+  return TheDerivative(x);
 }
 
 function drawSlope(x) {

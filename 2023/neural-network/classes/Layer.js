@@ -1,9 +1,9 @@
-class Layer {
+export default class Layer {
   // create the layer
-  constructor(numNodesIn, numNodesOut, layerIndex = "") {
+  constructor(numNodesIn, numNodesOut, layerName = "", showDom = true) {
     this.numNodesIn = numNodesIn;
     this.numNodesOut = numNodesOut;
-    this.layerIndex = layerIndex;
+    this.layerName = layerName;
 
     this.weights = [];
     this.biases = [];
@@ -12,7 +12,7 @@ class Layer {
     this.costGradientB = [];
 
     this.initRandomWeights();
-    this.createDom();
+    showDom && this.createDom();
   }
 
   // update the weights and biases based on the cost gradients (gradient descent)
@@ -31,19 +31,24 @@ class Layer {
     for (let nodeIn = 0; nodeIn < this.numNodesIn; nodeIn++) {
       this.weights[nodeIn] = [];
       for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
-        // get random value between -1 and 1
-        let rnd = random(-1, 1);
-        // scale the weights to be smaller, so that the network doesn't start with too large values
-        this.weights[nodeIn][nodeOut] = rnd / Math.sqrt(this.numNodesIn);
+        this.weights[nodeIn][nodeOut] =
+          this.randomInNormalDistribution(0, 1) / Math.sqrt(this.numNodesIn);
       }
     }
 
     for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
-      this.biases[nodeOut] = random(-1, 1);
+      this.biases[nodeOut] = 0;
     }
 
     this.costGradientW = this.weights.map((row) => row.map(() => 0));
     this.costGradientB = this.biases.map(() => 0);
+  }
+
+  randomInNormalDistribution(mean, standardDeviation) {
+    let x1 = 1 - random();
+    let x2 = 1 - random();
+    let y1 = Math.sqrt(-2.0 * Math.log(x1)) * Math.cos(2.0 * Math.PI * x2);
+    return y1 * standardDeviation + mean;
   }
 
   // calculate the output of the layer
@@ -91,13 +96,16 @@ class Layer {
     container.style("margin", "10px auto");
 
     // create the layer title, bold, bigger font, underlined, margin bottom
-    let layerTitle = createDiv(
-      `Layer ${this.layerIndex}: <br/>
-          (in ${this.numNodesIn} -> out ${this.numNodesOut})`
-    );
+    let layerTitle = createDiv(this.layerName);
     layerTitle.style("font-weight", "bold");
     layerTitle.style("font-size", "20px");
     layerTitle.style("margin-bottom", "10px");
+
+    // create a random weights button
+    let randomWeightsButton = createButton("Random");
+    randomWeightsButton.mousePressed(() => {
+      this.initRandomWeights();
+    });
 
     // create the weight sliders for each nodein and nodeout
     let weightsDiv = createDiv("Weights");
@@ -124,8 +132,8 @@ class Layer {
 
         // auto update dom interval
         setInterval(() => {
-          weightSlider.value(this.weights[nodeIn][nodeOut]);
           label.html(this.weights[nodeIn][nodeOut].toFixed(2));
+          weightSlider.value(this.weights[nodeIn][nodeOut]);
         }, 200);
       }
       weightsDiv.child(weightsList);
@@ -155,12 +163,13 @@ class Layer {
 
       // auto update dom interval
       setInterval(() => {
-        biasSlider.value(this.biases[nodeOut]);
         label.html(this.biases[nodeOut].toFixed(2));
+        biasSlider.value(this.biases[nodeOut]);
       }, 200);
     }
 
     container.child(layerTitle);
+    container.child(randomWeightsButton);
     container.child(weightsDiv);
     container.child(biasesDiv);
 

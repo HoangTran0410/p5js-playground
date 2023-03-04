@@ -1,16 +1,22 @@
-class NeuralNetwork {
+import Layer from "./Layer.js";
+
+export default class NeuralNetwork {
   // create the neural network
-  constructor(...layerSizes) {
+  constructor(layerSizes, costFunc, showDom = true) {
     this.layers = [];
     for (let i = 0; i < layerSizes.length - 1; i++) {
       this.layers.push(
         new Layer(
           layerSizes[i],
           layerSizes[i + 1],
-          i === layerSizes.length - 2 ? "output" : i + 1
+          (i === layerSizes.length - 2 ? "Layer output" : "Layer " + (i + 1)) +
+            ` (${layerSizes[i]} -> ${layerSizes[i + 1]})`,
+          showDom
         )
       );
     }
+
+    // this.costFunc = costFunc;
   }
 
   //   run the input values through the neural network to calculate the output values
