@@ -4,8 +4,7 @@ let graphSize = {
 };
 let inputValue,
   learnHistory = [],
-  learnRate = 0.1,
-  drawSlopeAtMouse = false;
+  learnRate = 0.1;
 
 function setup() {
   createCanvas(500, 500);
@@ -40,12 +39,6 @@ function setup() {
   randomButton.mousePressed(() => {
     inputValue = random(graphSize.x[0], graphSize.x[1]);
     learnHistory = [];
-  });
-
-  // create a checkbox to toggle drawing the slope at the mouse position
-  let drawSlopeAtMouseCheckbox = createCheckbox("Draw slope at mouse", false);
-  drawSlopeAtMouseCheckbox.changed(() => {
-    drawSlopeAtMouse = drawSlopeAtMouseCheckbox.checked();
   });
 }
 
@@ -126,7 +119,7 @@ function draw() {
   drawSlope(inputValue);
 
   // draw the slope at the mouse position
-  if (drawSlopeAtMouse) {
+  if (mouseIsPressed) {
     let mx = map(mouseX, 0, width, graphSize.x[0], graphSize.x[1]);
     drawSlope(mx);
   }
