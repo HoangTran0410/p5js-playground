@@ -81,10 +81,20 @@ export default class Layer {
     // return weightedInput > 0 ? 1 : 0;
   }
 
+  // activationDerivative(weightedInput) {
+  //   // derivative of the activation function (sigmoid)
+  //   let activation = this.activationFunction(weightedInput);
+  //   return activation * (1 - activation);
+  // }
+
   nodeCost(outputActivation, expectedOutput) {
     let error = outputActivation - expectedOutput;
     return error * error;
   }
+
+  // nodeCostDerivative(outputActivation, expectedOutput) {
+  //   return 2 * (outputActivation - expectedOutput);
+  // }
 
   // create 2 div elements for weights and biases, each div have label and list of sliders to control the values
   createDom() {
