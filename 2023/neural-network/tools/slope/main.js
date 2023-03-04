@@ -4,8 +4,8 @@ let graphSize = {
 };
 let inputValue,
   learnHistory = [],
-  isLearning = false,
-  learnRate = 0.1;
+  learnRate = 0.1,
+  drawSlopeAtMouse = false;
 
 function setup() {
   createCanvas(500, 500);
@@ -14,7 +14,7 @@ function setup() {
 
   // create slider for learning rate, and label
   let label = createDiv("Learning rate: " + learnRate);
-  let slider = createSlider(0.01, 0.5, 0.1, 0.01);
+  let slider = createSlider(0, 1, 0.1, 0.01);
   slider.style("width", "80px");
   slider.input(() => {
     learnRate = slider.value();
@@ -24,15 +24,28 @@ function setup() {
   // create reset button, to reset the input value
   let resetButton = createButton("Reset");
   resetButton.mousePressed(() => {
-    inputValue = random(graphSize.x[0], graphSize.x[1]);
+    inputValue = learnHistory[0] ?? inputValue;
     learnHistory = [];
-    isLearning = false;
   });
 
   // create a learn button
   let learnButton = createButton("Learn");
   learnButton.mousePressed(() => {
-    isLearning = true;
+    // learn
+    learn(learnRate);
+  });
+
+  // create a random button
+  let randomButton = createButton("Random");
+  randomButton.mousePressed(() => {
+    inputValue = random(graphSize.x[0], graphSize.x[1]);
+    learnHistory = [];
+  });
+
+  // create a checkbox to toggle drawing the slope at the mouse position
+  let drawSlopeAtMouseCheckbox = createCheckbox("Draw slope at mouse", false);
+  drawSlopeAtMouseCheckbox.changed(() => {
+    drawSlopeAtMouse = drawSlopeAtMouseCheckbox.checked();
   });
 }
 
@@ -111,24 +124,13 @@ function draw() {
   );
   ellipse(px, py, 10);
 
-  if (isLearning) {
-    // draw the slope at the input value
-    drawSlope(inputValue);
+  // draw the slope at the input value
+  drawSlope(inputValue);
 
-    // learn
-    learn(learnRate);
-  } else {
-    // draw the slope at mouseX position
-    drawSlope(map(mouseX, 0, width, graphSize.x[0], graphSize.x[1]));
-  }
-
-  // text info
-  if (isLearning) {
-    noStroke();
-    fill(255);
-    textAlign(LEFT, TOP);
-    textSize(14);
-    text("Learning...", 10, 10);
+  // draw the slope at the mouse position
+  if (drawSlopeAtMouse) {
+    let mx = map(mouseX, 0, width, graphSize.x[0], graphSize.x[1]);
+    drawSlope(mx);
   }
 }
 
@@ -137,11 +139,11 @@ function TheFunction(x) {
 }
 
 function learn(learnRate) {
-  let slope = calculateSlope(inputValue);
-  inputValue -= slope * learnRate;
-
   // keep track of the learning history
   learnHistory.push(inputValue);
+
+  let slope = calculateSlope(inputValue);
+  inputValue -= slope * learnRate;
 }
 
 function calculateSlope(x) {
