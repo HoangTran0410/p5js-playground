@@ -18,6 +18,8 @@ function setup() {
 
   // create the neural network
   neuralNetwork = new NeuralNetwork(2, 3, 2);
+
+  frameRate(60);
 }
 
 function draw() {
@@ -67,7 +69,7 @@ function draw() {
     ellipse(x, y, 8);
   }
 
-  // calculate the error, then display it
+  // calculate the correct, then display it
   let correct = 0;
   for (let data of trainingData) {
     let inputs = data.inputs;
@@ -77,16 +79,17 @@ function draw() {
   }
   fill(255);
   noStroke();
-  text("Correct: " + correct + "/" + trainingData.length, 10, 20);
+  text("Correct: " + correct + "/" + trainingData.length, 5, height - 5);
 
   // calculate the cost, then display it
   let cost = neuralNetwork.totalCost(trainingData);
   fill(255);
   noStroke();
-  text("Cost: " + cost.toFixed(7), 10, 40);
+  text("Cost: " + cost.toFixed(7), 5, height - 25);
 
+  // if learning, then learn
   if (learning) {
-    text("Learning...", 10, 60);
+    text("Learning...", 5, height - 45);
     for (let i = 0; i < 10; i++) {
       neuralNetwork.learn(trainingData, 0.1);
     }

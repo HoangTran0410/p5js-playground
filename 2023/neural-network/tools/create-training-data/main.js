@@ -40,7 +40,7 @@ function mousePressed() {
   if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return;
   let x = map(mouseX, 0, width, -graphSize, graphSize);
   let y = map(mouseY, 0, height, graphSize, -graphSize);
-  let inputs = [x.toFixed(2), y.toFixed(2)];
+  let inputs = [Number(x.toFixed(2)), Number(y.toFixed(2))];
   let expectedOutput = currentLabel;
   trainingData.push({ inputs, expectedOutput });
 }

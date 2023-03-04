@@ -1,198 +1,146 @@
 let trainingData = [
   {
-    inputs: ["9.75", "10.65"],
+    inputs: [1.8, 28.8],
     expectedOutput: 0,
   },
   {
-    inputs: ["6.60", "3.45"],
+    inputs: [7.95, 28.8],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [9.6, 23.85],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [17.7, 26.85],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [13.95, 27.45],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [15.75, 17.7],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [26.4, 25.05],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [21.45, 15.6],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [18.9, 20.4],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [24.15, 19.5],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [26.85, 12.75],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [22.95, 8.4],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [20.25, 9.75],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [27.45, 4.5],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [28.35, 8.4],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [22.05, 2.25],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [5.7, 18.9],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [2.7, 18.3],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [2.7, 21.9],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [10.8, 17.4],
+    expectedOutput: 0,
+  },
+  {
+    inputs: [1.8, 13.95],
     expectedOutput: 1,
   },
   {
-    inputs: ["27.75", "10.20"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["1.80", "13.80"],
+    inputs: [6.75, 13.8],
     expectedOutput: 1,
   },
   {
-    inputs: ["5.55", "9.45"],
+    inputs: [10.2, 13.2],
     expectedOutput: 1,
   },
   {
-    inputs: ["16.20", "27.00"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["14.25", "1.65"],
+    inputs: [13.65, 9.6],
     expectedOutput: 1,
   },
   {
-    inputs: ["26.10", "19.80"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["11.40", "2.85"],
+    inputs: [6.75, 10.35],
     expectedOutput: 1,
   },
   {
-    inputs: ["1.65", "1.80"],
+    inputs: [3, 10.05],
     expectedOutput: 1,
   },
   {
-    inputs: ["21.30", "16.50"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["25.95", "5.70"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["3.45", "10.80"],
+    inputs: [3.45, 6.6],
     expectedOutput: 1,
   },
   {
-    inputs: ["14.70", "10.05"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["5.25", "14.10"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["2.70", "5.70"],
+    inputs: [7.95, 6.6],
     expectedOutput: 1,
   },
   {
-    inputs: ["0.30", "11.25"],
+    inputs: [14.1, 4.5],
     expectedOutput: 1,
   },
   {
-    inputs: ["18.30", "2.25"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["16.35", "0.45"],
+    inputs: [14.7, 2.1],
     expectedOutput: 1,
   },
   {
-    inputs: ["13.20", "7.50"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["4.65", "1.35"],
+    inputs: [16.95, 2.4],
     expectedOutput: 1,
   },
   {
-    inputs: ["8.55", "6.75"],
+    inputs: [16.05, 9.3],
     expectedOutput: 1,
   },
   {
-    inputs: ["21.90", "5.70"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["2.70", "20.55"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["18.60", "8.85"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["19.65", "12.90"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["16.80", "19.35"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["2.70", "15.60"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["14.70", "20.55"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["5.10", "24.75"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["5.85", "18.90"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["8.70", "1.35"],
+    inputs: [9.6, 4.35],
     expectedOutput: 1,
   },
   {
-    inputs: ["27.75", "1.80"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["4.80", "7.95"],
+    inputs: [3.75, 2.25],
     expectedOutput: 1,
   },
   {
-    inputs: ["21.90", "23.55"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["10.80", "5.70"],
+    inputs: [1.35, 4.35],
     expectedOutput: 1,
   },
   {
-    inputs: ["15.15", "5.85"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["16.65", "4.20"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["9.90", "15.00"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["11.25", "21.45"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["25.05", "13.80"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["2.55", "8.25"],
+    inputs: [7.95, 1.65],
     expectedOutput: 1,
-  },
-  {
-    inputs: ["4.20", "4.35"],
-    expectedOutput: 1,
-  },
-  {
-    inputs: ["11.70", "9.00"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["22.20", "25.80"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["14.10", "14.40"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["22.35", "11.10"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["11.25", "25.50"],
-    expectedOutput: 0,
-  },
-  {
-    inputs: ["7.20", "12.45"],
-    expectedOutput: 0,
   },
 ];

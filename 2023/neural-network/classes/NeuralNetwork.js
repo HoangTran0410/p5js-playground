@@ -15,11 +15,10 @@ class NeuralNetwork {
 
   //   run the input values through the neural network to calculate the output values
   calculateOutput(inputs) {
-    let outputs = [...inputs];
     for (let layer of this.layers) {
-      outputs = layer.calculateOutput(outputs);
+      inputs = layer.calculateOutput(inputs);
     }
-    return outputs;
+    return inputs;
   }
 
   // run the inputs through the network and calculate which output node has the highest value

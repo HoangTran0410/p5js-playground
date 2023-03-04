@@ -106,16 +106,27 @@ class Layer {
 
       for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
         let weight = this.weights[nodeIn][nodeOut];
+
+        // slider
         let weightSlider = createSlider(-1, 1, weight, 0.01);
+        weightsList.child(weightSlider);
+
+        // label for the slider
+        let label = createDiv(this.weights[nodeIn][nodeOut].toFixed(2));
+        label.style("display", "inline-block");
+        weightsList.child(label);
+
+        // event listener for the slider
         weightSlider.input(() => {
           this.weights[nodeIn][nodeOut] = weightSlider.value();
+          label.html(this.weights[nodeIn][nodeOut].toFixed(2));
         });
-        weightsList.child(weightSlider);
 
         // auto update dom interval
         setInterval(() => {
           weightSlider.value(this.weights[nodeIn][nodeOut]);
-        }, 100);
+          label.html(this.weights[nodeIn][nodeOut].toFixed(2));
+        }, 200);
       }
       weightsDiv.child(weightsList);
     }
@@ -125,17 +136,28 @@ class Layer {
     for (let nodeOut = 0; nodeOut < this.numNodesOut; nodeOut++) {
       let biasesList = createDiv();
       let bias = this.biases[nodeOut];
+
+      // slider
       let biasSlider = createSlider(-1, 1, bias, 0.01);
-      biasSlider.input(() => {
-        this.biases[nodeOut] = biasSlider.value();
-      });
       biasesList.child(biasSlider);
       biasesDiv.child(biasesList);
+
+      // label for the slider
+      let label = createDiv(this.biases[nodeOut].toFixed(2));
+      label.style("display", "inline-block");
+      biasesList.child(label);
+
+      // event listener for the slider
+      biasSlider.input(() => {
+        this.biases[nodeOut] = biasSlider.value();
+        label.html(this.biases[nodeOut].toFixed(2));
+      });
 
       // auto update dom interval
       setInterval(() => {
         biasSlider.value(this.biases[nodeOut]);
-      }, 100);
+        label.html(this.biases[nodeOut].toFixed(2));
+      }, 200);
     }
 
     container.child(layerTitle);
