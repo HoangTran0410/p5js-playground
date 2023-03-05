@@ -11,6 +11,7 @@ let neuralNetwork,
 
 export function setup() {
   createCanvas(400, 400);
+  pixelDensity(1);
 
   let container = createDiv();
   container.style("padding", "10px");
