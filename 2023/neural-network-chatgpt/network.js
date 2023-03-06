@@ -11,6 +11,12 @@ export default class NeuralNetwork {
     }
   }
 
+  static randomize(network) {
+    for (const layer of network.layers) {
+      Layer.randomize(layer);
+    }
+  }
+
   static feedForward(inputs, network) {
     let outputs = inputs;
     for (const layer of network.layers) {
@@ -19,11 +25,13 @@ export default class NeuralNetwork {
     return outputs;
   }
 
-  loss(inputs, targets) {
+  static loss(inputs, targets, network) {
     let loss = 0;
     for (let i = 0; i < inputs.length; i++) {
-      let outputs = this.feedForward(inputs[i]);
-      loss += this.lossFunction.calculate(outputs, targets[i]);
+      let outputs = NeuralNetwork.feedForward(inputs[i], network);
+      for (let j = 0; j < outputs.length; j++) {
+        loss += network.lossFunction.calculate(outputs[j], targets[i][j]);
+      }
     }
     return loss / inputs.length;
   }
@@ -51,38 +59,81 @@ export default class NeuralNetwork {
     return [trainingData, testingData];
   }
 
-  trainBatch(inputs, targets, learningRate) {
-    let outputs = this.feedForward(inputs);
+  static trainOne(inputs, targets, network, options) {
+    options = {
+      learningRate: 0.05,
+      ...options,
+    };
 
-    for (let layer of this.layers) {
+    let h = 0.0001;
+    let originalLoss = NeuralNetwork.loss(inputs, targets, network);
+
+    for (let layer of network.layers) {
+      // calculate the loss gradient for the current weights
+      for (let i = 0; i < layer.outputs.length; i++) {
+        for (let j = 0; j < layer.inputs.length; j++) {
+          layer.weights[i][j] += h;
+          let deltaLoss =
+            NeuralNetwork.loss(inputs, targets, network) - originalLoss;
+          layer.weights[i][j] -= h;
+          layer.lossGradientWeights[i][j] = deltaLoss / h;
+        }
+      }
+
+      // calculate the loss gradient for the current biases
+      for (let i = 0; i < layer.outputs.length; i++) {
+        layer.biases[i] += h;
+        let deltaLoss =
+          NeuralNetwork.loss(inputs, targets, network) - originalLoss;
+        layer.biases[i] -= h;
+        layer.lossGradientBiases[i] = deltaLoss / h;
+      }
+    }
+
+    // apply the loss gradient to the weights and biases
+    for (let layer of network.layers) {
+      Layer.applyGradient(layer, options.learningRate);
     }
   }
 
-  train(inputs, targets, options) {
+  static train(inputs, targets, network, options = {}) {
     options = {
-      learningRate: 0.1,
-      epochs: 1,
-      batchSize: 1,
-      trainPercentage: 0.8,
+      epochs: 100,
+      batchSize: 10,
+      trainingPercentage: 0.8,
+      learningRate: 0.05,
       ...options,
     };
 
     let [trainingData, testingData] = NeuralNetwork.splitTrainTest(
       inputs,
       targets,
-      options.trainPercentage
+      options.trainingPercentage
     );
 
     for (let epoch = 0; epoch < options.epochs; epoch++) {
+      let epochLoss = 0;
       for (let i = 0; i < trainingData.inputs.length; i += options.batchSize) {
-        let inputsBatch = trainingData.inputs.slice(i, i + options.batchSize);
-        let targetsBatch = trainingData.targets.slice(i, i + options.batchSize);
-
-        this.trainBatch(inputsBatch, targetsBatch, options.learningRate);
+        let batchInputs = trainingData.inputs.slice(i, i + options.batchSize);
+        let batchTargets = trainingData.targets.slice(i, i + options.batchSize);
+        NeuralNetwork.trainOne(batchInputs, batchTargets, network, {
+          learningRate: options.learningRate,
+        });
+        epochLoss += NeuralNetwork.loss(batchInputs, batchTargets, network);
       }
+      epochLoss /= trainingData.inputs.length;
 
-      let loss = this.loss(testingData.inputs, testingData.targets);
-      console.log(`Epoch ${epoch}: loss = ${loss}`);
+      let testingLoss = NeuralNetwork.loss(
+        testingData.inputs,
+        testingData.targets,
+        network
+      );
+
+      console.log(
+        `Epoch ${epoch}: 
+        Epoch Loss: ${epochLoss.toFixed(5)}
+        Testing Loss: ${testingLoss.toFixed(5)}`
+      );
     }
   }
 }
@@ -96,15 +147,29 @@ class Layer {
     this.weights = new Array(outputCount);
     this.biases = new Array(outputCount);
 
+    this.lossGradientWeights = new Array(outputCount);
+    this.lossGradientBiases = new Array(outputCount);
+
     Layer.randomize(this);
+  }
+
+  static applyGradient(layer, learningRate) {
+    for (let i = 0; i < layer.outputs.length; i++) {
+      layer.biases[i] -= learningRate * layer.lossGradientBiases[i];
+      for (let j = 0; j < layer.inputs.length; j++) {
+        layer.weights[i][j] -= learningRate * layer.lossGradientWeights[i][j];
+      }
+    }
   }
 
   static randomize(layer) {
     for (let i = 0; i < layer.outputs.length; i++) {
       layer.biases[i] = 0;
       layer.weights[i] = new Array(layer.inputs.length);
+      layer.lossGradientWeights[i] = new Array(layer.inputs.length);
       for (let j = 0; j < layer.inputs.length; j++) {
-        layer.weights[i][j] = Math.random() * 2 - 1;
+        layer.weights[i][j] =
+          (Math.random() * 2 - 1) / Math.sqrt(layer.inputs.length);
       }
     }
   }
@@ -124,31 +189,6 @@ class Layer {
     }
 
     return layer.outputs;
-  }
-
-  backpropagate(errors, learningRate, inputs) {
-    // calculate the new errors
-    let newErrors = [];
-    for (let i = 0; i < this.inputCount; i++) {
-      let sum = 0;
-      for (let j = 0; j < this.outputCount; j++) {
-        sum += this.weights[j][i] * errors[j];
-      }
-      newErrors[i] = sum;
-    }
-
-    // update the weights and biases
-    for (let i = 0; i < this.outputCount; i++) {
-      for (let j = 0; j < this.inputCount; j++) {
-        this.weights[i][j] -=
-          learningRate *
-          errors[i] *
-          this.activationFunction.derivative(inputs[j]);
-      }
-      this.biases[i] -= learningRate * errors[i];
-    }
-
-    return newErrors;
   }
 }
 
@@ -225,71 +265,10 @@ export class LossFunction {
   // the squared differences between the predicted output and the actual output.
   static MeanSquaredError = {
     calculate: (predicted, actual) => {
-      let sum = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        sum += Math.pow(predicted[i] - actual[i], 2);
-      }
-      return sum / predicted.length;
+      return Math.pow(predicted - actual, 2);
     },
     derivative: (predicted, actual) => {
-      let sum = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        sum += 2 * (predicted[i] - actual[i]);
-      }
-      return sum / predicted.length;
-    },
-  };
-
-  // Cross-Entropy Loss: This loss function is commonly used in classification problems,
-  // where the output is a probability distribution over several classes.
-  // The cross-entropy loss measures the difference between the predicted
-  // probability distribution and the actual distribution.
-  static CrossEntropyLoss = {
-    calculate: (predicted, actual) => {
-      let loss = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        loss += actual[i] * Math.log(predicted[i]);
-      }
-      return -loss;
-    },
-    derivative: (predicted, actual) => {
-      let loss = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        loss += actual[i] / predicted[i] - (1 - actual[i]) / (1 - predicted[i]);
-      }
-      return loss;
-    },
-  };
-
-  // Binary Cross-Entropy Loss: This is a special case of the cross-entropy loss
-  // used for binary classification problems, where the output is either 0 or 1.
-  static BinaryCrossEntropyLoss = {
-    calculate: (predicted, actual) => {
-      return (
-        -actual * Math.log(predicted) - (1 - actual) * Math.log(1 - predicted)
-      );
-    },
-    derivative: (predicted, actual) => {
-      return (predicted - actual) / (predicted * (1 - predicted));
-    },
-  };
-
-  // Categorical Cross-Entropy Loss: This is a variant of the cross-entropy loss
-  // used for multiclass classification problems, where the output is a probability distribution over several classes.
-  static CategoricalCrossEntropyLoss = {
-    calculate: (predicted, actual) => {
-      let loss = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        loss += actual[i] * Math.log(predicted[i]);
-      }
-      return -loss;
-    },
-    derivative: (predicted, actual) => {
-      let loss = 0;
-      for (let i = 0; i < predicted.length; i++) {
-        loss += actual[i] / predicted[i];
-      }
-      return -loss;
+      return 2 * (predicted - actual);
     },
   };
 }

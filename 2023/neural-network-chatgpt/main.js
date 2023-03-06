@@ -3,6 +3,12 @@ import data from "./data.json" assert { type: "json" };
 
 let neuralNetwork, trainingData;
 let graphSize = 30;
+let trainOptions = {
+  epochs: 10,
+  batchSize: 10,
+  learningRate: 0.05,
+  trainingPercentage: 0.8,
+};
 
 window.setup = () => {
   createCanvas(400, 400);
@@ -19,10 +25,41 @@ window.setup = () => {
     targets: data.map((d) => (d.label == 1 ? [0, 1] : [1, 0])),
   };
 
-  // train the neural network
-  neuralNetwork.train(trainingData.inputs, trainingData.targets, {
-    epochs: 1,
-    learningRate: 0.1,
+  // create an slider for the options, contains sliders
+  createDiv("Training Options:");
+
+  let learningRateLabel = createDiv(
+    "Learning Rate: " + trainOptions.learningRate
+  );
+  let learningRateSlider = createSlider(0.01, 0.5, 0.05, 0.01);
+  learningRateSlider.input(() => {
+    trainOptions.learningRate = learningRateSlider.value();
+    learningRateLabel.html("Learning Rate: " + trainOptions.learningRate);
+  });
+
+  let epochsLabel = createDiv("Epochs: " + trainOptions.epochs);
+  let epochsSlider = createSlider(1, 1000, 100, 1);
+  epochsSlider.input(() => {
+    trainOptions.epochs = epochsSlider.value();
+    epochsLabel.html("Epochs: " + trainOptions.epochs);
+  });
+
+  let batchSizeLabel = createDiv("Batch Size: " + trainOptions.batchSize);
+  let batchSizeSlider = createSlider(1, 100, 10, 1);
+  batchSizeSlider.input(() => {
+    trainOptions.batchSize = batchSizeSlider.value();
+    batchSizeLabel.html("Batch Size: " + trainOptions.batchSize);
+  });
+
+  let trainingPercentageLabel = createDiv(
+    "Training Percentage: " + trainOptions.trainingPercentage
+  );
+  let trainingPercentageSlider = createSlider(0.1, 0.9, 0.8, 0.1);
+  trainingPercentageSlider.input(() => {
+    trainOptions.trainingPercentage = trainingPercentageSlider.value();
+    trainingPercentageLabel.html(
+      "Training Percentage: " + trainOptions.trainingPercentage
+    );
   });
 };
 
@@ -32,6 +69,13 @@ function classifyOutput(output) {
 
 window.draw = () => {
   background(30);
+
+  NeuralNetwork.train(
+    trainingData.inputs,
+    trainingData.targets,
+    neuralNetwork,
+    trainOptions
+  );
 
   // draw training data
   noStroke();
@@ -56,7 +100,7 @@ window.draw = () => {
       let graphY = map(y, 0, height, graphSize, -graphSize);
 
       // draw the graph
-      let output = neuralNetwork.feedForward([graphX, graphY]);
+      let output = NeuralNetwork.feedForward([graphX, graphY], neuralNetwork);
       let predicted = classifyOutput(output);
       if (predicted === 0) {
         pixels[index + 0] = 255;
@@ -80,7 +124,11 @@ window.draw = () => {
   line(width / 2, 0, width / 2, height);
 
   // draw the loss
-  let loss = neuralNetwork.loss(trainingData.inputs, trainingData.targets);
+  let loss = NeuralNetwork.loss(
+    trainingData.inputs,
+    trainingData.targets,
+    neuralNetwork
+  );
   fill(255);
   noStroke();
   textSize(16);
@@ -90,7 +138,7 @@ window.draw = () => {
   let correctCount = 0;
   for (let i = 0; i < trainingData.inputs.length; i++) {
     let input = trainingData.inputs[i];
-    let output = neuralNetwork.feedForward(input);
+    let output = NeuralNetwork.feedForward(input, neuralNetwork);
 
     let predicted = classifyOutput(output);
     let expected = classifyOutput(trainingData.targets[i]);
@@ -110,5 +158,5 @@ window.draw = () => {
   fill(255);
   noStroke();
   textSize(16);
-  text(`Correct: ${correctCount}`, 10, 40);
+  text(`Correct: ${correctCount}/${trainingData.inputs.length}`, 10, 40);
 };
