@@ -15,7 +15,7 @@ window.setup = () => {
 
   trainingData = {
     inputs: data.map((d) => d.inputs),
-    targets: data.map((d) => d.label),
+    targets: data.map((d) => (d.label == 1 ? [0, 1] : [1, 0])),
   };
 };
 
@@ -73,6 +73,20 @@ window.draw = () => {
   noStroke();
   textSize(16);
   text(`Loss: ${loss}`, 10, 20);
+
+  // // draw correct count
+  let correctCount = 0;
+  for (let i = 0; i < trainingData.inputs.length; i++) {
+    let predicted = neuralNetwork.classify(trainingData.inputs[i]);
+    let expected = trainingData.targets[i];
+    if (predicted == expected) {
+      correctCount++;
+    }
+  }
+  fill(255);
+  noStroke();
+  textSize(16);
+  text(`Correct: ${correctCount}`, 10, 40);
 };
 
 class NeuralNetwork {
@@ -86,6 +100,8 @@ class NeuralNetwork {
         new Layer(layerSizes[i], layerSizes[i + 1], activationFunction)
       );
     }
+
+    this.outputsCache = null;
   }
 
   feedForward(inputs) {
@@ -101,7 +117,14 @@ class NeuralNetwork {
     return outputs.indexOf(Math.max(...outputs));
   }
 
-  loss(inputs, targets) {}
+  loss(inputs, targets) {
+    let loss = 0;
+    for (let i = 0; i < inputs.length; i++) {
+      let outputs = this.feedForward(inputs[i]);
+      loss += this.lossFunction.activate(outputs, targets[i]);
+    }
+    return loss / inputs.length;
+  }
 }
 
 class Layer {
