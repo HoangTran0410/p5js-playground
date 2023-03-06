@@ -36,6 +36,18 @@ export default class NeuralNetwork {
     return loss / inputs.length;
   }
 
+  static accuracy(inputs, targets, network) {
+    let correct = 0;
+    for (let i = 0; i < inputs.length; i++) {
+      let outputs = NeuralNetwork.feedForward(inputs[i], network);
+      let index = outputs.indexOf(Math.max(...outputs));
+      if (targets[i][index] === 1) {
+        correct++;
+      }
+    }
+    return correct / inputs.length;
+  }
+
   static splitTrainTest(inputs, targets, trainPercentage) {
     let trainingData = {
       inputs: [],
@@ -91,8 +103,18 @@ export default class NeuralNetwork {
     }
 
     // apply the loss gradient to the weights and biases
+    NeuralNetwork.applyAllGradients(network, options.learningRate);
+  }
+
+  static applyAllGradients(network, learningRate) {
     for (let layer of network.layers) {
-      Layer.applyGradient(layer, options.learningRate);
+      Layer.applyGradient(layer, learningRate);
+    }
+  }
+
+  static clearAllGradients(network) {
+    for (let layer of network.layers) {
+      Layer.clearGradient(layer);
     }
   }
 
@@ -123,6 +145,9 @@ export default class NeuralNetwork {
       }
       epochLoss /= trainingData.inputs.length;
 
+      // clear the gradients for the next epoch
+      NeuralNetwork.clearAllGradients(network);
+
       let testingLoss = NeuralNetwork.loss(
         testingData.inputs,
         testingData.targets,
@@ -130,9 +155,9 @@ export default class NeuralNetwork {
       );
 
       console.log(
-        `Epoch ${epoch}: 
-        Epoch Loss: ${epochLoss.toFixed(5)}
-        Testing Loss: ${testingLoss.toFixed(5)}`
+        `Epoch ${epoch}:
+          Epoch Loss: ${epochLoss.toFixed(5)}
+          Testing Loss: ${testingLoss.toFixed(5)}`
       );
     }
   }
@@ -151,6 +176,15 @@ class Layer {
     this.lossGradientBiases = new Array(outputCount);
 
     Layer.randomize(this);
+  }
+
+  static clearGradient(layer) {
+    for (let i = 0; i < layer.outputs.length; i++) {
+      layer.lossGradientBiases[i] = 0;
+      for (let j = 0; j < layer.inputs.length; j++) {
+        layer.lossGradientWeights[i][j] = 0;
+      }
+    }
   }
 
   static applyGradient(layer, learningRate) {

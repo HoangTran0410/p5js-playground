@@ -15,7 +15,7 @@ window.setup = () => {
   pixelDensity(1);
 
   neuralNetwork = new NeuralNetwork(
-    [2, 3, 2],
+    [2, 6, 2],
     ActivationFunction.Sigmoid,
     LossFunction.MeanSquaredError
   );
@@ -134,7 +134,7 @@ window.draw = () => {
   textSize(16);
   text(`Loss: ${loss.toFixed(5)}`, 10, 20);
 
-  // // draw correct count
+  // draw correct count
   let correctCount = 0;
   for (let i = 0; i < trainingData.inputs.length; i++) {
     let input = trainingData.inputs[i];
@@ -159,4 +159,15 @@ window.draw = () => {
   noStroke();
   textSize(16);
   text(`Correct: ${correctCount}/${trainingData.inputs.length}`, 10, 40);
+
+  // draw the accuracy
+  let accuracy = NeuralNetwork.accuracy(
+    trainingData.inputs,
+    trainingData.targets,
+    neuralNetwork
+  );
+  fill(255);
+  noStroke();
+  textSize(16);
+  text(`Accuracy: ${accuracy.toFixed(5)}`, 10, 60);
 };
