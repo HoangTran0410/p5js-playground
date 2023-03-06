@@ -6,7 +6,12 @@ export default class NeuralNetwork {
     this.layers = [];
     for (let i = 0; i < layerSizes.length - 1; i++) {
       this.layers.push(
-        new Layer(layerSizes[i], layerSizes[i + 1], activationFunction)
+        new Layer(
+          layerSizes[i],
+          layerSizes[i + 1],
+          activationFunction,
+          lossFunction
+        )
       );
     }
   }
@@ -102,8 +107,35 @@ export default class NeuralNetwork {
       }
     }
 
+    // for(let i = 0; i < inputs.length; i++) {
+    // NeuralNetwork.updateAllGradient(inputs[i], targets[i], network);
+    // }
+
     // apply the loss gradient to the weights and biases
     NeuralNetwork.applyAllGradients(network, options.learningRate);
+
+    // clear the gradients for the next batch
+    NeuralNetwork.clearAllGradients(network);
+  }
+
+  static updateAllGradient(inputs, targets, network, options) {
+    let outputs = NeuralNetwork.feedForward(inputs, network);
+
+    // update gradients of the output layer
+    let outputLayer = network.layers[network.layers.length - 1];
+    let nodeValues = Layer.calculateOutputLayerNodeValues(outputLayer, targets);
+    Layer.updateGradient(outputLayer, nodeValues);
+
+    // loop back through the hidden layers to update their gradients
+    for (let i = network.layers.length - 2; i >= 0; i--) {
+      let hiddenLayer = network.layers[i];
+      nodeValues = Layer.calculateHiddenLayerNodeValues(
+        hiddenLayer,
+        network.layers[i + 1],
+        nodeValues
+      );
+      Layer.updateGradient(hiddenLayer, nodeValues);
+    }
   }
 
   static applyAllGradients(network, learningRate) {
@@ -164,10 +196,11 @@ export default class NeuralNetwork {
 }
 
 class Layer {
-  constructor(inputCount, outputCount, activationFunction) {
+  constructor(inputCount, outputCount, activationFunction, lossFunction) {
     this.inputs = new Array(inputCount);
     this.outputs = new Array(outputCount);
     this.activationFunction = activationFunction;
+    this.lossFunction = lossFunction;
 
     this.weights = new Array(outputCount);
     this.biases = new Array(outputCount);
@@ -194,6 +227,51 @@ class Layer {
         layer.weights[i][j] -= learningRate * layer.lossGradientWeights[i][j];
       }
     }
+  }
+
+  static updateGradient(layer, nodeValues) {
+    for (let i = 0; i < layer.outputs.length; i++) {
+      for (let j = 0; j < layer.inputs.length; j++) {
+        layer.lossGradientWeights[i][j] += nodeValues[i] * layer.inputs[j];
+      }
+
+      layer.lossGradientBiases[i] += nodeValues[i];
+    }
+  }
+
+  static calculateOutputLayerNodeValues(layer, targets) {
+    let nodeValues = new Array(layer.outputs.length);
+
+    for (let i = 0; i < layer.outputs.length; i++) {
+      let lossDerivative = layer.lossFunction.derivative(
+        layer.outputs[i],
+        targets[i]
+      );
+      let activationDerivative = layer.activationFunction.derivative(
+        layer.outputs[i]
+      );
+      nodeValues[i] = lossDerivative * activationDerivative;
+    }
+
+    return nodeValues;
+  }
+
+  static calculateHiddenLayerNodeValues(layer, oldLayer, oldNodeValues) {
+    let nodeValues = new Array(layer.outputs.length);
+
+    for (let i = 0; i < layer.outputs.length; i++) {
+      let sum = 0;
+      for (let j = 0; j < oldLayer.outputs.length; j++) {
+        sum += oldNodeValues[j] * oldLayer.weights[j][i];
+      }
+
+      let activationDerivative = layer.activationFunction.derivative(
+        layer.outputs[i]
+      );
+      nodeValues[i] = sum * activationDerivative;
+    }
+
+    return nodeValues;
   }
 
   static randomize(layer) {
