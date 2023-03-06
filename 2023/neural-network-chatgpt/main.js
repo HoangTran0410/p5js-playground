@@ -9,8 +9,8 @@ window.setup = () => {
 
   neuralNetwork = new NeuralNetwork(
     [2, 3, 2],
-    ActivationFunction.sigmoid,
-    LossFunction.meanSquaredError
+    ActivationFunction.Sigmoid,
+    LossFunction.MeanSquaredError
   );
 
   trainingData = {
@@ -66,7 +66,43 @@ window.draw = () => {
   strokeWeight(1);
   line(0, height / 2, width, height / 2);
   line(width / 2, 0, width / 2, height);
+
+  // draw the loss
+  let loss = neuralNetwork.loss(trainingData.inputs, trainingData.targets);
+  fill(255);
+  noStroke();
+  textSize(16);
+  text(`Loss: ${loss}`, 10, 20);
 };
+
+class NeuralNetwork {
+  constructor(layerSizes, activationFunction, lossFunction) {
+    this.activationFunction = activationFunction;
+    this.lossFunction = lossFunction;
+
+    this.layers = [];
+    for (let i = 0; i < layerSizes.length - 1; i++) {
+      this.layers.push(
+        new Layer(layerSizes[i], layerSizes[i + 1], activationFunction)
+      );
+    }
+  }
+
+  feedForward(inputs) {
+    let outputs = inputs;
+    for (const layer of this.layers) {
+      outputs = layer.feedForward(outputs);
+    }
+    return outputs;
+  }
+
+  classify(inputs) {
+    let outputs = this.feedForward(inputs);
+    return outputs.indexOf(Math.max(...outputs));
+  }
+
+  loss(inputs, targets) {}
+}
 
 class Layer {
   constructor(numInputs, numOutputs, activationFunction) {
@@ -74,10 +110,33 @@ class Layer {
     this.numOutputs = numOutputs;
     this.activationFunction = activationFunction;
 
-    this.weights = new Array(numOutputs)
-      .fill(0)
-      .map(() => new Array(numInputs).fill(0).map(() => Math.random() * 2 - 1));
-    this.biases = new Array(numOutputs).fill(0);
+    this.weights = [];
+    this.biases = [];
+
+    // initialize the weights and biases
+    for (let i = 0; i < numOutputs; i++) {
+      this.weights.push([]);
+      for (let j = 0; j < numInputs; j++) {
+        this.weights[i].push(random(-1, 1));
+      }
+      this.biases.push(random(-1, 1));
+    }
+  }
+
+  feedForward(inputs) {
+    this.inputs = inputs;
+    this.outputs = [];
+
+    for (let i = 0; i < this.numOutputs; i++) {
+      let sum = 0;
+      for (let j = 0; j < this.numInputs; j++) {
+        sum += this.weights[i][j] * inputs[j];
+      }
+      sum += this.biases[i];
+      this.outputs.push(this.activationFunction.activate(sum));
+    }
+
+    return this.outputs;
   }
 }
 
@@ -85,7 +144,7 @@ class ActivationFunction {
   // Sigmoid function:
   // The sigmoid function maps any input value to a value between 0 and 1,
   // which makes it useful for binary classification tasks.
-  static sigmoid = {
+  static Sigmoid = {
     activate: (x) => {
       return 1 / (1 + Math.exp(-x));
     },
@@ -98,7 +157,7 @@ class ActivationFunction {
   // Hyperbolic tangent (tanh) function:
   // The tanh function maps any input value to a value between -1 and 1,
   // which makes it useful for tasks where negative values are important.
-  static tanh = {
+  static Tanh = {
     activate: (x) => {
       return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
     },
@@ -111,7 +170,7 @@ class ActivationFunction {
   // Rectified Linear Unit (ReLU) function:
   // The ReLU function maps any negative input value to 0, while preserving positive input values.
   // This makes it computationally efficient and effective in deep neural networks.
-  static relu = {
+  static ReLU = {
     activate: (x) => {
       return Math.max(0, x);
     },
@@ -123,7 +182,7 @@ class ActivationFunction {
   // Leaky ReLU function:
   // The Leaky ReLU function is a modified version of the ReLU function that allows for
   // small negative input values to be preserved. This can improve the performance of deep neural networks.
-  static leakyRelu = {
+  static LeakyReLU = {
     activate: (x, alpha) => {
       return x < 0 ? alpha * x : x;
     },
@@ -135,7 +194,7 @@ class ActivationFunction {
   // Softmax function:
   // The softmax function is used to map a vector of values to a probability distribution.
   // This is useful for classification tasks, where the output is a probability distribution over several classes.
-  static softmax = {
+  static Softmax = {
     activate: (x) => {
       const exps = x.map(Math.exp);
       const sumExps = exps.reduce((acc, val) => acc + val, 0);
@@ -152,7 +211,7 @@ class LossFunction {
   // Mean Squared Error (MSE): This loss function is used for regression problems,
   // where the output is a continuous value. The MSE computes the average of
   // the squared differences between the predicted output and the actual output.
-  static meanSquaredError = {
+  static MeanSquaredError = {
     activate: (predicted, actual) => {
       let sum = 0;
       for (let i = 0; i < predicted.length; i++) {
@@ -173,7 +232,7 @@ class LossFunction {
   // where the output is a probability distribution over several classes.
   // The cross-entropy loss measures the difference between the predicted
   // probability distribution and the actual distribution.
-  static crossEntropyLoss = {
+  static CrossEntropyLoss = {
     activate: (predicted, actual) => {
       let loss = 0;
       for (let i = 0; i < predicted.length; i++) {
@@ -192,7 +251,7 @@ class LossFunction {
 
   // Binary Cross-Entropy Loss: This is a special case of the cross-entropy loss
   // used for binary classification problems, where the output is either 0 or 1.
-  static binaryCrossEntropyLoss = {
+  static BinaryCrossEntropyLoss = {
     activate: (predicted, actual) => {
       return (
         -actual * Math.log(predicted) - (1 - actual) * Math.log(1 - predicted)
@@ -205,7 +264,7 @@ class LossFunction {
 
   // Categorical Cross-Entropy Loss: This is a variant of the cross-entropy loss
   // used for multiclass classification problems, where the output is a probability distribution over several classes.
-  static categoricalCrossEntropyLoss = {
+  static CategoricalCrossEntropyLoss = {
     activate: (predicted, actual) => {
       let loss = 0;
       for (let i = 0; i < predicted.length; i++) {
