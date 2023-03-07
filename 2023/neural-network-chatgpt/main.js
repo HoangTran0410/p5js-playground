@@ -15,7 +15,7 @@ window.setup = () => {
   pixelDensity(1);
 
   neuralNetwork = new NeuralNetwork(
-    [2, 6, 2],
+    [2, 3, 2],
     ActivationFunction.Sigmoid,
     LossFunction.MeanSquaredError
   );
@@ -31,7 +31,7 @@ window.setup = () => {
   let learningRateLabel = createDiv(
     "Learning Rate: " + trainOptions.learningRate
   );
-  let learningRateSlider = createSlider(0.01, 0.5, 0.05, 0.01);
+  let learningRateSlider = createSlider(0.01, 0.5, 0.05, 0.001);
   learningRateSlider.input(() => {
     trainOptions.learningRate = learningRateSlider.value();
     learningRateLabel.html("Learning Rate: " + trainOptions.learningRate);
@@ -70,12 +70,12 @@ function classifyOutput(output) {
 window.draw = () => {
   background(30);
 
-  NeuralNetwork.train(
-    trainingData.inputs,
-    trainingData.targets,
-    neuralNetwork,
-    trainOptions
-  );
+  // NeuralNetwork.train(
+  //   trainingData.inputs,
+  //   trainingData.targets,
+  //   neuralNetwork,
+  //   trainOptions
+  // );
 
   // draw training data
   noStroke();
