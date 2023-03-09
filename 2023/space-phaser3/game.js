@@ -28,6 +28,7 @@ function create() {
   // Create a spaceship sprite triangle
   spaceship = this.add.triangle(400, 300, 0, 0, 0, 40, 40, 20, 0xff0000);
   this.physics.add.existing(spaceship);
+  spaceship.body.setCircle(20, 0, 0);
   spaceship.body.setMaxSpeed(MAX_SPEED);
 
   cursors = this.input.keyboard.createCursorKeys();
@@ -46,7 +47,7 @@ function create() {
   });
 
   // create a big circle planet
-  const planet = this.add.circle(400, 300, 100, 0x00ff00);
+  const planet = this.add.circle(0, 300, 100, 0x00ff00);
   this.physics.add.existing(planet);
   planet.body.setImmovable(true);
 
