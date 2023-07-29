@@ -1,9 +1,12 @@
 let arr = [];
 let highlightIndexes = [];
 let sleepTime = 10;
+let arrToAnimations = [];
 
 let delaySlider;
 let isSorting = false;
+
+const lineWidth = 7;
 
 async function runSort(sortFunc, array, button) {
   if (!isSorting) {
@@ -15,11 +18,25 @@ async function runSort(sortFunc, array, button) {
   }
 }
 
+function getCurrentState() {
+  return arr.map((v, i) => ({
+    value: v,
+    realIndex: i, // real index in the sorted array
+    targetIndex: 0,
+    currentIndex: i, // current index in the array, can be float number
+  }));
+}
+
 function setup() {
   createCanvas(min(windowWidth, 800), 500);
   colorMode(HSB, 100);
 
-  for (let i = 0; i < ~~(width / 10); i++) arr.push(~~random(100));
+  let len = ~~(width / lineWidth);
+  for (let i = 0; i < len; i++) arr.push(map(i, 0, len, 0, 100));
+  arrToAnimations = getCurrentState();
+  console.log(arrToAnimations);
+
+  shuffleArray(arr);
 
   delaySlider = createSlider(0, 100, 10, 2);
 
@@ -51,31 +68,45 @@ function setup() {
   createButton("Quick Sort").mouseClicked((e) => {
     runSort(quickSort, arr, e.target);
   });
-  createButton("Radix Sort").mouseClicked((e) => {
-    runSort(radixSort, arr, e.target);
-  });
+  // createButton("Radix Sort").mouseClicked((e) => {
+  //   runSort(radixSort, arr, e.target);
+  // });
 }
 
 function draw() {
   background(20);
 
   sleepTime = delaySlider.value();
-  let w = width / arr.length;
 
   noStroke();
-  for (let i = 0; i < arr.length; i++) {
-    let value = arr[i];
+  for (let i = arrToAnimations.length - 1; i >= 0; i--) {
+    let { value, realIndex, targetIndex, currentIndex } = arrToAnimations[i];
+
+    let indexInArr = arr.indexOf(value);
+    if (indexInArr >= 0) arrToAnimations[i].targetIndex = indexInArr;
+
+    let lerpSpeed = 0.15;
+    arrToAnimations[i].currentIndex = lerp(
+      currentIndex,
+      targetIndex,
+      lerpSpeed
+    );
+
     let h = map(value, 0, 100, 0, height);
     let top = height - h;
-    let left = i * w;
+    let left = currentIndex * lineWidth;
 
-    fill(value, 255, 255);
-    rect(left, top, w, h);
+    // fill(value, 255, 100);
+    // rect(left, top, lineWidth, h);
+    stroke(value, 255, 100);
+    strokeWeight(lineWidth - 2);
+    line(left + lineWidth / 2, top, left + 50, height);
 
-    let hi = highlightIndexes.indexOf(i);
+    let hi = highlightIndexes.indexOf(indexInArr);
     if (hi >= 0) {
       fill(255);
-      rect(left, 0, w, height - h);
+      noStroke();
+      rect(left, 0, lineWidth, height - h);
     }
   }
 }

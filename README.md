@@ -51,3 +51,5 @@ Mở project bất kỳ trong repo này đều sẽ có **demo link** cho các b
 ### 2023
 
 1. [Space](./2023/space/) (*2*)
+2. [Train Neuron Network](./2023/train-neuron-network/) (*3*)
+3. [LOL2D 2023](https://github.com/HoangTran0410/LOL2D) (*6~now*)
