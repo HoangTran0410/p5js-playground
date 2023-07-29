@@ -8,7 +8,7 @@ function sleep(ms) {
 }
 
 // https://bost.ocks.org/mike/shuffle/
-async function shuffleArray(array) {
+async function shuffleArray(array, willSleep = true) {
   var m = array.length,
     t,
     i;
@@ -25,7 +25,7 @@ async function shuffleArray(array) {
 
     highlightIndexes[0] = m;
     highlightIndexes[1] = i;
-    await sleep(sleepTime);
+    await sleep(willSleep ? sleepTime : 0);
   }
 
   highlightIndexes = [];

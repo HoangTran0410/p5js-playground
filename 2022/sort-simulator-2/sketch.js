@@ -1,12 +1,11 @@
 let arr = [];
 let highlightIndexes = [];
 let sleepTime = 10;
+let arraySize = 100;
 let arrToAnimations = [];
 
-let delaySlider;
+let delayInput, arrSizeInput;
 let isSorting = false;
-
-const lineWidth = 7;
 
 async function runSort(sortFunc, array, button) {
   if (!isSorting) {
@@ -27,18 +26,34 @@ function getCurrentState() {
   }));
 }
 
+function createArray() {
+  for (let i = 0; i < arraySize; i++) arr.push(map(i, 0, arraySize, 0, 100));
+  arrToAnimations = getCurrentState();
+  shuffleArray(arr, false);
+}
+
 function setup() {
   createCanvas(min(windowWidth, 800), 500);
   colorMode(HSB, 100);
 
-  let len = ~~(width / lineWidth);
-  for (let i = 0; i < len; i++) arr.push(map(i, 0, len, 0, 100));
-  arrToAnimations = getCurrentState();
-  console.log(arrToAnimations);
+  createArray(arraySize);
 
-  shuffleArray(arr);
+  createElement("lable", "Delay (ms):");
+  delayInput = createInput("10");
+  delayInput.attribute("type", "number");
+  delayInput.attribute("min", "0");
+  delayInput.attribute("max", "1000");
+  delayInput.attribute("step", "10");
 
-  delaySlider = createSlider(0, 100, 10, 2);
+  createElement("lable", "Array size:");
+  arrSizeInput = createInput("100");
+  arrSizeInput.attribute("type", "number");
+  arrSizeInput.attribute("min", "10");
+  arrSizeInput.attribute("max", "400");
+  arrSizeInput.input(() => {
+    arraySize = arrSizeInput.value();
+    createArray();
+  });
 
   createButton("Shuffle").mouseClicked((e) => {
     runSort(shuffleArray, arr, e.target);
@@ -76,7 +91,7 @@ function setup() {
 function draw() {
   background(20);
 
-  sleepTime = delaySlider.value();
+  sleepTime = delayInput.value();
 
   noStroke();
   for (let i = arrToAnimations.length - 1; i >= 0; i--) {
@@ -92,21 +107,22 @@ function draw() {
       lerpSpeed
     );
 
+    let w = width / arraySize;
     let h = map(value, 0, 100, 0, height);
     let top = height - h;
-    let left = currentIndex * lineWidth;
+    let left = currentIndex * w;
 
     // fill(value, 255, 100);
-    // rect(left, top, lineWidth, h);
+    // rect(left, top, w, h);
     stroke(value, 255, 100);
-    strokeWeight(lineWidth - 2);
-    line(left + lineWidth / 2, top, left + 50, height);
+    strokeWeight(w - 2);
+    line(left + w / 2, top, left + 50, height);
 
     let hi = highlightIndexes.indexOf(indexInArr);
     if (hi >= 0) {
       fill(255);
       noStroke();
-      rect(left, 0, lineWidth, height - h);
+      rect(left, 0, w, height - h);
     }
   }
 }

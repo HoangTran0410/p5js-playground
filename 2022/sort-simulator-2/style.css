@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #151515;
+    color: #eee;
 }
 
 body {
@@ -46,16 +47,24 @@ button.loading::after {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
+
 @keyframes changeLetter {
     0% {
         content: ' 🤨';
     }
+
     50% {
         content: ' 🤯';
     }
+
     100% {
         content: ' 🤔';
     }
