@@ -1,6 +1,6 @@
 // https://www.youtube.com/watch?v=hfMk-kjRv4c
 
-import trainingData from "./data.json" assert { type: "json" };
+import trainingData from "./data.json"
 import NeuralNetwork from "./classes/NeuralNetwork.js";
 import { MeanSquaredError } from "./classes/Cost.js";
 
