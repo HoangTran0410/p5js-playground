@@ -39,8 +39,9 @@ export default class NeuralNetwork {
     let outputLayer = this.layers[this.layers.length - 1];
     let cost = 0;
 
-    for (let output of outputs) {
-      cost += outputLayer.nodeCost(output, expectedOutput);
+    // expectedOutput should be an array matching the output size
+    for (let i = 0; i < outputs.length; i++) {
+      cost += outputLayer.nodeCost(outputs[i], expectedOutput[i]);
     }
 
     return cost;
