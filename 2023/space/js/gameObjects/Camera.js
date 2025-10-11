@@ -7,7 +7,7 @@ export default class Camera {
     scale = 1,
     scaleTo = 0.1,
     scaleLerp = 0.09,
-    maxScale = 1,
+    maxScale = 3,
     minScale = 0.005,
     rotate = 0,
     rotateTo = 0,

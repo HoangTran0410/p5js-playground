@@ -2,10 +2,12 @@ import StarField from "./gameObjects/StarField.js";
 import Ship from "./gameObjects/Ship.js";
 import Camera from "./gameObjects/Camera.js";
 import Planet from "./gameObjects/Planet.js";
+import HUD from "./gameObjects/HUD.js";
 
 let starField,
   ship,
   cam,
+  hud,
   planets = [];
 
 export function setup() {
@@ -17,6 +19,7 @@ export function setup() {
   cam.follow(ship.position);
 
   starField = new StarField(displayHeight / 2);
+  hud = new HUD();
 
   // create 10 planets, not overlapping
   for (let i = 0; i < 2; i++) {
@@ -62,6 +65,9 @@ export function draw() {
   ship.show(cam);
 
   cam.endState();
+
+  // Draw HUD in screen space
+  hud.show(ship, cam);
 
   // controls
   if (keyIsDown(UP_ARROW)) {
